@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Simple.Web</id>
+    <id>Simple.Http</id>
     <version>0.0.0.0</version>
     <authors>$authors$</authors>
     <owners>Mark Rendle, Ian Battersby</owners>
     <copyright>Mark Rendle</copyright>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
-    <projectUrl>http://github.com/markrendle/Simple.Web</projectUrl>
+    <projectUrl>http://github.com/markrendle/Simple.Http</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A REST-focused, object-oriented Web Framework for .NET 4.</description>
     <summary>A REST-focused, object-oriented Web Framework for .NET 4.</summary>
     <tags>simple.web</tags>
   </metadata>
   <files>
-    <file src="..\..\build\Simple.Web.dll" target="lib\net40" />
-    <file src="..\..\build\Simple.Web.*db" target="lib\net40" />
-    <file src="..\..\src\Simple.Web\**\*.cs" target="src" />
+    <file src="..\..\build\Simple.Http.dll" target="lib\net40" />
+    <file src="..\..\build\Simple.Http.*db" target="lib\net40" />
+    <file src="..\..\src\Simple.Http\**\*.cs" target="src" />
   </files>
 </package> 

@@ -1,10 +1,10 @@
 include FileTest
 
 # Build information
-SOLUTION_NAME = "Simple.Web"
-SOLUTION_DESC = "A REST-focused, object-oriented Web Framework for .NET 4."
+SOLUTION_NAME = "Simple.Http"
+SOLUTION_DESC = "A REST-focused, object-oriented Http Framework for .NET 4."
 SOLUTION_LICENSE = "http://www.opensource.org/licenses/mit-license.php"
-SOLUTION_URL = "http://github.com/markrendle/Simple.Web"
+SOLUTION_URL = "http://github.com/markrendle/Simple.Http"
 SOLUTION_COMPANY = "Mark Rendle, Ian Battersby, and contributors"
 SOLUTION_COPYRIGHT = "Copyright (C) Mark Rendle 2012"
 
@@ -43,7 +43,7 @@ TOOLS_PATH = "#{BASE_PATH}/tools"
 
 # Files
 ASSEMBLY_INFO = "#{SOURCE_PATH}/CommonAssemblyInfo.cs"
-SOLUTION_FILE = "#{SOURCE_PATH}/Simple.Web.sln"
+SOLUTION_FILE = "#{SOURCE_PATH}/Simple.Http.sln"
 VERSION_INFO = "#{BASE_PATH}/VERSION.txt"
 
 # Matching
