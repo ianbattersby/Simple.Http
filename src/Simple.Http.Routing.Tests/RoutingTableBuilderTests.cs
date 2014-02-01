@@ -124,7 +124,7 @@
     }
 
     [UriTemplate("/regex/{T}/{Id}")]
-    [RegexGenericResolver("T", @"^Simple\.Web\.Routing\.Tests\.")]
+    [RegexGenericResolver("T", @"^Simple\.Http\.Routing\.Tests\.")]
     public class GetThingRegex<T> : IGet, IOutput<T>
     {
         public Status Get()

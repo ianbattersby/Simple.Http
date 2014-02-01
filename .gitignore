@@ -22,16 +22,14 @@ apply_config.bat
 NDependOut
 *.dotCover
 *_mm_cache.bin
-Simple.Data.sln.DotSettings.user
-Simple.Data/Simple.Data.idc
+*.sln.DotSettings.user
 .DS_Store
 mono-release-*
-Simple.Web.sln.DotSettings.user
 test
 test*ml
 build
 *.ncrunchproject
-Simple.Web.ncrunchsolution.user
+*.ncrunchsolution.user
 docs
 *.ndproj
 nohup.out
@@ -44,4 +42,3 @@ nuget
 src/packages/*
 !src/packages/repositories.config
 artifacts
-*.ncrunchsolution
