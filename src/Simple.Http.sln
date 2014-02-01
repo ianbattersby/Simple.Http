@@ -41,8 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuSpec", "NuSpec", "{85A043
 	ProjectSection(SolutionItems) = preProject
 		..\packaging\nuspec\Simple.Http.JsonNet.nuspec = ..\packaging\nuspec\Simple.Http.JsonNet.nuspec
 		..\packaging\nuspec\Simple.Http.nuspec = ..\packaging\nuspec\Simple.Http.nuspec
-		..\packaging\nuspec\Simple.Http.StructureMap.nuspec = ..\packaging\nuspec\Simple.Http.StructureMap.nuspec
 		..\packaging\nuspec\Simple.Http.Xml.nuspec = ..\packaging\nuspec\Simple.Http.Xml.nuspec
+		..\packaging\nuspec\Simple.Https.StructureMap.nuspec = ..\packaging\nuspec\Simple.Https.StructureMap.nuspec
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7DD7CF02-CB61-4B79-AD02-8258D97D1B96}"
