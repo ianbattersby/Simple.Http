@@ -83,24 +83,8 @@ namespace Simple.Http.CodeGeneration
 
             blocks.AddRange(CreateBlocks(GetSetupBehaviorInfos()));
 
-            var buildAction = GetType().GetMethod("BuildAction", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(_handlerType);
-
-            var setCookieProperties = CookiePropertySetter.GetCookiePropertySetters(_handlerType, _handler, _context).ToList();
-            if (setCookieProperties.Any())
-            {
-                var setCookieDelegate = buildAction.Invoke(this, new object[] {setCookieProperties});
-                blocks.Add(setCookieDelegate);
-            }
-
             var second = new HandlerBlock(_handlerType, GetRunMethod(httpMethod));
             blocks.Add(second);
-
-            var setPropertyCookies = PropertyCookieSetter.GetPropertyCookieSetters(_handlerType, _handler, _context).ToList();
-            if (setPropertyCookies.Any())
-            {
-                var setPropertyDelegate = buildAction.Invoke(this, new object[] {setPropertyCookies});
-                blocks.Add(setPropertyDelegate);
-            }
 
             var redirectBehavior = new ResponseBehaviorInfo(typeof (object), typeof (Redirect2), Priority.High) { Universal = true };
 

@@ -16,8 +16,8 @@ namespace Simple.Http.StructureMap.Tests
         public void CreatesInstanceOfType()
         {
             var startup = new TestStartup();
-            startup.Run(SimpleWeb.Configuration, SimpleWeb.Environment);
-            var target = new HandlerBuilderFactory(SimpleWeb.Configuration);
+            startup.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
+            var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
             var actual = (TestHandler)actualFunc(new Dictionary<string, string> { { "TestProperty", "Foo" } }).Handler;
             Assert.Equal(Status.OK, actual.Get());
@@ -28,8 +28,8 @@ namespace Simple.Http.StructureMap.Tests
         public void DisposesInstances()
         {
             var startup = new TestStartup();
-            startup.Run(SimpleWeb.Configuration, SimpleWeb.Environment);
-            var target = new HandlerBuilderFactory(SimpleWeb.Configuration);
+            startup.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
+            var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
 
             TestHandler handler;

@@ -20,7 +20,7 @@
         /// </summary>
         public static HandlerFactory Instance
         {
-            get { return _instance ?? (_instance = new HandlerFactory(SimpleWeb.Configuration)); }
+            get { return _instance ?? (_instance = new HandlerFactory(SimpleHttp.Configuration)); }
         }
 
         private readonly HandlerBuilderFactory _handlerBuilderFactory;

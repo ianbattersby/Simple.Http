@@ -57,15 +57,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Application.cs" />
-    <Compile Include="Authentication\AnonymousUser.cs" />
     <Compile Include="Behaviors\BehaviorAttribute.cs" />
-    <Compile Include="Behaviors\CookieAttribute.cs" />
     <Compile Include="Behaviors\IETag.cs" />
     <Compile Include="Behaviors\Implementations\Disposable.cs" />
     <Compile Include="Behaviors\Implementations\GetInput.cs" />
-    <Compile Include="Behaviors\Implementations\OptionalAuthentication.cs" />
     <Compile Include="Behaviors\Implementations\WriteOutputAsync.cs" />
-    <Compile Include="Behaviors\IOptionalAuthentication.cs" />
     <Compile Include="Behaviors\IOutputStream.cs" />
     <Compile Include="Behaviors\OutputBehaviorAttribute.cs" />
     <Compile Include="Behaviors\RequestBehaviorAttribute.cs" />
@@ -73,24 +69,17 @@
     <Compile Include="CodeGeneration\AsyncPipeline.cs" />
     <Compile Include="CodeGeneration\AsyncRunner.cs" />
     <Compile Include="CodeGeneration\BehaviorInfo.cs" />
-    <Compile Include="CodeGeneration\CheckRunException.cs" />
-    <Compile Include="CodeGeneration\CookiePropertySetter.cs" />
     <Compile Include="CodeGeneration\HandlerBlock.cs" />
     <Compile Include="CodeGeneration\IScopedHandler.cs" />
     <Compile Include="CodeGeneration\ObjectEx.cs" />
     <Compile Include="CodeGeneration\OutputBehaviorInfo.cs" />
     <Compile Include="CodeGeneration\PipelineBlock.cs" />
     <Compile Include="CodeGeneration\PipelineFunctionFactory.cs" />
-    <Compile Include="CodeGeneration\PropertyCookieSetter.cs" />
     <Compile Include="CodeGeneration\RequestBehaviorInfo.cs" />
     <Compile Include="CodeGeneration\ResponseBehaviorInfo.cs" />
-    <Compile Include="Authentication\DefaultAuthenticationProvider.cs" />
     <Compile Include="CodeGeneration\ScopedHandler.cs" />
     <Compile Include="CodeGeneration\TypeEx.cs" />
-    <Compile Include="Cors\AccessControlEntry.cs" />
-    <Compile Include="Cors\IAccessControlEntry.cs" />
     <Compile Include="ExplicitGenericResolverAttribute.cs" />
-    <Compile Include="FileMappingDictionary.cs" />
     <Compile Include="GenericResolverAttribute.cs" />
     <Compile Include="Helpers\AsyncExtensions.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
@@ -105,21 +94,17 @@
     <Compile Include="Behaviors\Implementations\SetInputETag.cs" />
     <Compile Include="Behaviors\Implementations\SetLastModified.cs" />
     <Compile Include="Behaviors\Implementations\SetOutputETag.cs" />
-    <Compile Include="Behaviors\Implementations\SetUserCookie.cs" />
-    <Compile Include="Protocol\ContextExtensions.cs" />
     <Compile Include="Protocol\Cookie.cs" />
     <Compile Include="Protocol\CookieWriter.cs" />
     <Compile Include="Protocol\HeaderKeys.cs" />
     <Compile Include="Protocol\RequestExtensions.cs" />
     <Compile Include="Protocol\ResponseExtensions.cs" />
-    <Compile Include="IExceptionHandler.cs" />
     <Compile Include="MediaTypeHandling\IContent.cs" />
     <Compile Include="MediaTypeHandling\ObjectToDictionary.cs" />
     <Compile Include="Hosting\HandlerFactory.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\AssemblyExtensions.cs" />
-    <Compile Include="Behaviors\Implementations\CheckAuthentication.cs" />
     <Compile Include="Behaviors\Implementations\SetCacheOptions.cs" />
     <Compile Include="CodeGeneration\IMethodLookup.cs" />
     <Compile Include="CodeGeneration\MethodLookup.cs" />
@@ -148,7 +133,6 @@
     <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="IDelete.cs" />
     <Compile Include="IHead.cs" />
-    <Compile Include="Behaviors\ILogin.cs" />
     <Compile Include="Behaviors\IModified.cs" />
     <Compile Include="IPatch.cs" />
     <Compile Include="IPut.cs" />
@@ -160,13 +144,11 @@
     <Compile Include="Helpers\UriFromType.cs" />
     <Compile Include="Helpers\UriTemplateHelper.cs" />
     <Compile Include="Protocol\HttpMethodAttribute.cs" />
-    <Compile Include="Authentication\IAuthenticationProvider.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="MediaTypeHandling\IMediaTypeHandler.cs" />
     <Compile Include="Protocol\IContext.cs" />
     <Compile Include="IGet.cs" />
     <Compile Include="Behaviors\IInput.cs" />
-    <Compile Include="Behaviors\ILoginPage.cs" />
     <Compile Include="Behaviors\ICacheability.cs" />
     <Compile Include="Behaviors\IOutput.cs" />
     <Compile Include="Helpers\IPathUtility.cs" />
@@ -174,12 +156,10 @@
     <Compile Include="Behaviors\IMayRedirect.cs" />
     <Compile Include="IPostedFile.cs" />
     <Compile Include="Protocol\IRequest.cs" />
-    <Compile Include="Behaviors\IRequireAuthentication.cs" />
     <Compile Include="Protocol\IResponse.cs" />
     <Compile Include="DependencyInjection\ISimpleContainer.cs" />
     <Compile Include="IStartupTask.cs" />
     <Compile Include="Behaviors\IUploadFiles.cs" />
-    <Compile Include="Authentication\IUser.cs" />
     <Compile Include="IWebEnvironment.cs" />
     <Compile Include="MediaTypeHandling\Content.cs" />
     <Compile Include="CodeGeneration\PropertySetterBuilder.cs" />
@@ -194,8 +174,6 @@
     <Compile Include="OwinSupport\PostedFile.cs" />
     <Compile Include="OwinSupport\QueryStringParser.cs" />
     <Compile Include="Priority.cs" />
-    <Compile Include="PublicFile.cs" />
-    <Compile Include="PublicFolder.cs" />
     <Compile Include="Raw.cs" />
     <Compile Include="RawHtml.cs" />
     <Compile Include="RegexGenericResolverAttribute.cs" />
@@ -211,14 +189,13 @@
     <Compile Include="Routing\RoutingTableBuilder.cs" />
     <Compile Include="Routing\SingleValueMatcher.cs" />
     <Compile Include="Routing\StaticMatcher.cs" />
-    <Compile Include="SimpleWeb.cs" />
+    <Compile Include="SimpleHttp.cs" />
     <Compile Include="Hosting\StartupTaskRunner.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Status.Success.cs" />
     <Compile Include="Status.Redirect.cs" />
     <Compile Include="UnsupportedMediaTypeException.cs" />
     <Compile Include="UriTemplateAttribute.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="WebEnvironment.cs" />
   </ItemGroup>
   <ItemGroup>

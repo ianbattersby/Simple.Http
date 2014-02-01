@@ -4,7 +4,6 @@ namespace Simple.Http.Protocol
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text.RegularExpressions;
-    using Cors;
 
     /// <summary>
     /// Extension methods for the <see cref="IResponse"/> interface.
@@ -168,36 +167,6 @@ namespace Simple.Http.Protocol
         {
             EnsureHeaders(response);
             response.SetHeader(HeaderKeys.LastModified, dateTime.ToUniversalTime().ToString("R"));
-        }
-
-        /// <summary>
-        /// Sets the Access-Control-* headers.
-        /// </summary>
-        /// <param name="response">The <see cref="IResponse"/> instance.</param>
-        /// <param name="accessControl">A <see cref="IAccessControlEntry"/> containing the header values.</param>
-        public static void SetAccessControl(this IResponse response, IAccessControlEntry accessControl)
-        {
-            response.SetHeader(HeaderKeys.AccessControlAllowOrigin, accessControl.Origin);
-            if (!string.IsNullOrWhiteSpace(accessControl.AllowHeaders))
-            {
-                response.SetHeader(HeaderKeys.AccessControlAllowHeaders, accessControl.AllowHeaders);
-            }
-            if (!string.IsNullOrWhiteSpace(accessControl.ExposeHeaders))
-            {
-                response.SetHeader(HeaderKeys.AccessControlExposeHeaders, accessControl.ExposeHeaders);
-            }
-            if (!string.IsNullOrWhiteSpace(accessControl.Methods))
-            {
-                response.SetHeader(HeaderKeys.AccessControlAllowMethods, accessControl.Methods);
-            }
-            if (accessControl.Credentials.HasValue)
-            {
-                response.SetHeader(HeaderKeys.AccessControlAllowCredentials, accessControl.Credentials.Value.ToString());
-            }
-            if (accessControl.MaxAge.HasValue)
-            {
-                response.SetHeader(HeaderKeys.AccessControlMaxAge, accessControl.MaxAge.Value.ToString(CultureInfo.InvariantCulture));
-            }
         }
 
         /// <summary>

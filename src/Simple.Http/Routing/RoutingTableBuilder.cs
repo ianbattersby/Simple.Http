@@ -59,12 +59,6 @@ namespace Simple.Http.Routing
                         routingTable.Add(uriTemplate, new HandlerTypeInfo(exportedType, respondsToTypes, respondsWithTypes));
                     }
                 }
-
-                // If it's the LoginPage, set it to the configuration
-                if (SimpleWeb.Configuration.LoginPage == null && typeof(ILoginPage).IsAssignableFrom(exportedType))
-                {
-                    SimpleWeb.Configuration.LoginPage = exportedType;
-                }
             }
         }
 

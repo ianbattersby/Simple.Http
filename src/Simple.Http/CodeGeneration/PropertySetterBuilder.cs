@@ -213,7 +213,7 @@ namespace Simple.Http.CodeGeneration
             var lines = new List<Expression> { construct };
 
             var setters = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.CanWrite && Attribute.GetCustomAttribute(p, typeof(CookieAttribute)) == null)
+                .Where(p => p.CanWrite)
                 .Where(PropertyIsPrimitive)
                 .Select(p => new PropertySetterBuilder(variables, instance, p))
                 .Select(ps => ps.CreatePropertySetter());
@@ -233,7 +233,7 @@ namespace Simple.Http.CodeGeneration
             lines.Add(Expression.Assign(variables, getVariables));
 
             var setters = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.CanWrite && Attribute.GetCustomAttribute(p, typeof(CookieAttribute)) == null)
+                .Where(p => p.CanWrite)
                 .Where(PropertyIsPrimitive)
                 .Select(p => new PropertySetterBuilder(variables, instance, p))
                 .Select(ps => ps.CreatePropertySetter());

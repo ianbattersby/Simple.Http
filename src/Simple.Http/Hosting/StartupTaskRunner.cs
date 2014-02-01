@@ -55,7 +55,7 @@
             var task = Activator.CreateInstance(type) as IStartupTask;
             if (task != null)
             {
-                task.Run(SimpleWeb.Configuration, SimpleWeb.Environment);
+                task.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
             }
         }
     }

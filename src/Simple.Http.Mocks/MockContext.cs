@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-
 namespace Simple.Http.Mocks
 {
-    using System.IO;
-    using Authentication;
-    using Protocol;
+    using System.Collections.Generic;
+
+    using Simple.Http.Protocol;
 
     public class MockContext : IContext
     {
@@ -22,7 +20,5 @@ namespace Simple.Http.Mocks
         {
             get { return _variables; }
         }
-
-        public IUser User { get; set; }
     }
 }

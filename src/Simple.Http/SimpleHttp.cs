@@ -3,7 +3,7 @@ namespace Simple.Http
     /// <summary>
     /// Configuration and Environment information.
     /// </summary>
-    public static class SimpleWeb
+    public static class SimpleHttp
     {
         /// <summary>
         /// The current Configuration for the app.

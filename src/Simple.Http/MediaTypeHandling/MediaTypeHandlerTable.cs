@@ -72,7 +72,7 @@ namespace Simple.Http.MediaTypeHandling
 
             if (mediaType.StartsWith("*/*", StringComparison.OrdinalIgnoreCase))
             {
-                return SimpleWeb.Configuration.DefaultMediaTypeHandler;
+                return SimpleHttp.Configuration.DefaultMediaTypeHandler;
             }
 
             UnsupportedMediaTypes.Add(mediaType);

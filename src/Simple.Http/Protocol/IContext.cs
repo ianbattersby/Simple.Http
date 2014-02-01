@@ -2,8 +2,6 @@ using System.Collections.Generic;
 
 namespace Simple.Http.Protocol
 {
-    using Authentication;
-
     /// <summary>
     /// Represents the context for a request/response cycle.
     /// </summary>

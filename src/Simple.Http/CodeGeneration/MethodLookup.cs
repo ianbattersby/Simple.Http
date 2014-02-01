@@ -6,8 +6,6 @@ namespace Simple.Http.CodeGeneration
 
     class MethodLookup : IMethodLookup
     {
-        public MethodInfo CheckAuthentication { get { return Get(typeof (CheckAuthentication)); } }
-        public MethodInfo SetFiles { get { return Get(typeof (SetFiles)); } }
         public MethodInfo SetInput { get { return Get(typeof (SetInput)); } }
         public MethodInfo SetInputETag { get { return Get(typeof (SetInputETag)); } } 
         public MethodInfo SetOutputETag { get { return Get(typeof (SetOutputETag)); } }
@@ -20,7 +18,6 @@ namespace Simple.Http.CodeGeneration
         public MethodInfo WriteRawHtml { get { return Get(typeof (WriteRawHtml)); } }
         public MethodInfo WriteOutput { get { return Get(typeof (WriteOutput)); } }
         public MethodInfo WriteView { get { return Get(typeof (WriteView)); } }
-        public MethodInfo SetUserCookie { get { return Get(typeof (SetUserCookie)); } }
 
         private static MethodInfo Get(Type type)
         {

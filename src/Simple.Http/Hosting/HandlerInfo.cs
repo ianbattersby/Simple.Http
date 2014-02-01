@@ -69,17 +69,6 @@ namespace Simple.Http.Hosting
         }
 
         /// <summary>
-        /// Gets a value indicating whether the Handler requires authentication.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the Handler requires authentication; otherwise, <c>false</c>.
-        /// </value>
-        public bool RequiresAuthentication
-        {
-            get { return typeof (IRequireAuthentication).IsAssignableFrom(_handlerType); }
-        }
-
-        /// <summary>
         /// Gets the type of the input.
         /// </summary>
         /// <value>
