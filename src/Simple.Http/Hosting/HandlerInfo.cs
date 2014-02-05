@@ -1,20 +1,25 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="HandlerInfo.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Provides useful information about handlers.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Hosting
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Protocol;
-    using Simple.Http.Behaviors;
 
     /// <summary>
     /// Provides useful information about handlers.
     /// </summary>
     public sealed class HandlerInfo
     {
-        private readonly Type _handlerType;
-        private readonly string _httpMethod;
-        private readonly IDictionary<string, string> _variables;
+        private readonly Type handlerType;
+        private readonly string httpMethod;
+        private readonly IDictionary<string, string> variables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HandlerInfo"/> class.
@@ -34,11 +39,19 @@ namespace Simple.Http.Hosting
         /// <param name="httpMethod">The HTTP method.</param>
         public HandlerInfo(Type handlerType, IDictionary<string, string> variables, string httpMethod)
         {
-            if (handlerType == null) throw new ArgumentNullException("handlerType");
-            if (httpMethod == null) throw new ArgumentNullException("httpMethod");
-            _handlerType = handlerType;
-            _variables = variables ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            _httpMethod = httpMethod;
+            if (handlerType == null)
+            {
+                throw new ArgumentNullException("handlerType");
+            }
+
+            if (httpMethod == null)
+            {
+                throw new ArgumentNullException("httpMethod");
+            }
+
+            this.handlerType = handlerType;
+            this.variables = variables ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            this.httpMethod = httpMethod;
         }
 
         /// <summary>
@@ -46,7 +59,7 @@ namespace Simple.Http.Hosting
         /// </summary>
         public string HttpMethod
         {
-            get { return _httpMethod; }
+            get { return this.httpMethod; }
         }
 
         /// <summary>
@@ -54,7 +67,7 @@ namespace Simple.Http.Hosting
         /// </summary>
         public IDictionary<string, string> Variables
         {
-            get { return _variables; }
+            get { return this.variables; }
         }
 
         /// <summary>
@@ -65,50 +78,7 @@ namespace Simple.Http.Hosting
         /// </value>
         public Type HandlerType
         {
-            get { return _handlerType; }
-        }
-
-        /// <summary>
-        /// Gets the type of the input.
-        /// </summary>
-        /// <value>
-        /// The type of the input.
-        /// </value>
-        public Type InputType
-        {
-            get { return GetInterfaceGenericType(typeof (IInput<>)); }
-        }
-
-        /// <summary>
-        /// Gets the type of the output.
-        /// </summary>
-        /// <value>
-        /// The type of the output.
-        /// </value>
-        public Type OutputType
-        {
-            get { return GetInterfaceGenericType(typeof (IOutput<>)); }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the handler is asynchronous.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if the handler is asynchronous; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAsync
-        {
-            get { return HttpMethodAttribute.GetMethod(_handlerType, _httpMethod).ReturnType == typeof (Task<Status>); }
-        }
-
-        private Type GetInterfaceGenericType(Type genericType)
-        {
-            var genericInterface = _handlerType.GetInterface(genericType.Name);
-            if (genericInterface == null)
-            {
-                return null;
-            }
-            return genericInterface.GetGenericArguments().FirstOrDefault();
+            get { return this.handlerType; }
         }
     }
 }

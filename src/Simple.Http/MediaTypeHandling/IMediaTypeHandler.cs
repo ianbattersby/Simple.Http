@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IMediaTypeHandler.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents a handler for a specific content type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.MediaTypeHandling
 {
     using System;

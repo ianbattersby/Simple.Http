@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Simple.Http.Tests
 {
@@ -23,8 +20,8 @@ namespace Simple.Http.Tests
         [Fact]
         public void GetsPropertyValue()
         {
-            var str = "Marvin";
-            Expression<Func<int>> target = () => str.Length;
+            const string Str = "Marvin";
+            Expression<Func<int>> target = () => Str.Length;
             object actual;
             Assert.True(ExpressionHelper.TryGetValue(target.Body, out actual));
             Assert.Equal(6, actual);

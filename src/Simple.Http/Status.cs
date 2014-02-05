@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Status.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents the HTTP Status Code returned by a Handler.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
     using System;
@@ -9,6 +18,16 @@ namespace Simple.Http
     /// <remarks>Has an implicit cast from <see cref="int"/>.</remarks>
     public partial struct Status : IEquatable<Status>
     {
+        private static readonly StatusLookupCollection StatusLookup;
+
+        private readonly string httpStatusDescription;
+        private readonly string locationHeader;
+
+        /// <summary>
+        /// Indicates that everything is horrible, and you should hide in a cupboard until it's all over.
+        /// </summary>
+        public static readonly Status InternalServerError = new Status(500, "Internal Server Error");
+
         /// <summary>
         /// The basic "everything's OK" status.
         /// </summary>
@@ -30,19 +49,92 @@ namespace Simple.Http
         public static readonly Status Conflict = new Status(409, "Conflict");
 
         /// <summary>
+        /// Nothing to see here.
+        /// </summary>
+        public static readonly Status NoContent = new Status(204, "No Content");
+
+        static Status()
+        {
+            StatusLookup = new StatusLookupCollection
+                               {
+                                   OK,
+                                   Created,
+                                   NoContent,
+                                   InternalServerError,
+                               };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Status"/> struct.
+        /// </summary>
+        /// <param name="httpStatusCode">The HTTP status code.</param>
+        public Status(int httpStatusCode)
+            : this(httpStatusCode, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Status"/> struct.
+        /// </summary>
+        /// <param name="httpStatusCode">The HTTP status code.</param>
+        /// <param name="httpStatusDescription">The HTTP status description.</param>
+        public Status(int httpStatusCode, string httpStatusDescription)
+            : this(httpStatusCode, httpStatusDescription, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Status"/> struct.
+        /// </summary>
+        /// <param name="httpStatusCode">The HTTP status code.</param>
+        /// <param name="httpStatusDescription">The HTTP status description.</param>
+        /// <param name="locationHeader">Redirection Url</param>
+        public Status(int httpStatusCode, string httpStatusDescription, string locationHeader)
+            : this()
+        {
+            this.Code = httpStatusCode;
+            this.httpStatusDescription = httpStatusDescription;
+            this.locationHeader = locationHeader;
+        }
+
+        /// <summary>
+        /// Gets the HTTP status code.
+        /// </summary>
+        public int Code { get; private set; }
+
+        /// <summary>
+        /// Gets the HTTP status description.
+        /// </summary>
+        public string Description
+        {
+            get { return this.httpStatusDescription; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this Status represents success.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this Status represents success; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsSuccess
+        {
+            get { return this.Code >= 200 && this.Code <= 299; }
+        }
+
+        public string LocationHeader
+        {
+            get { return this.locationHeader; }
+        }
+
+        /// <summary>
         /// Indicates that a request was processed successfully and a new resource was created.
         /// </summary>
         /// <param name="location">The redirect location.</param>
-        /// <returns></returns>
+        /// <returns>Response Status.</returns>
         public static Status CreatedRedirect(string location)
         {
             return new Status(201, "Created", location);
         }
-
-        /// <summary>
-        /// Nothing to see here.
-        /// </summary>
-        public static readonly Status NoContent = new Status(204, "No Content");
 
         /// <summary>
         /// A redirect to another resource, telling the client to use the new URI for all future requests.
@@ -86,57 +178,6 @@ namespace Simple.Http
         }
 
         /// <summary>
-        /// Indicates that everything is horrible, and you should hide in a cupboard until it's all over.
-        /// </summary>
-        public static readonly Status InternalServerError = new Status(500, "Internal Server Error");
-        private static readonly StatusLookupCollection StatusLookup;
-
-        static Status()
-        {
-            StatusLookup = new StatusLookupCollection
-                               {
-                                   OK,
-                                   Created,
-                                   NoContent,
-                                   InternalServerError,
-                               };
-        }
-
-        private readonly int _httpStatusCode;
-        private readonly string _httpStatusDescription;
-        private readonly string _locationHeader;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Status"/> struct.
-        /// </summary>
-        /// <param name="httpStatusCode">The HTTP status code.</param>
-        public Status(int httpStatusCode) : this(httpStatusCode, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Status"/> struct.
-        /// </summary>
-        /// <param name="httpStatusCode">The HTTP status code.</param>
-        /// <param name="httpStatusDescription">The HTTP status description.</param>
-        public Status(int httpStatusCode, string httpStatusDescription) : this(httpStatusCode, httpStatusDescription, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Status"/> struct.
-        /// </summary>
-        /// <param name="httpStatusCode">The HTTP status code.</param>
-        /// <param name="httpStatusDescription">The HTTP status description.</param>
-        /// <param name="locationHeader">Redirection Url</param>
-        public Status(int httpStatusCode, string httpStatusDescription, string locationHeader) : this()
-        {
-            _httpStatusCode = httpStatusCode;
-            _httpStatusDescription = httpStatusDescription;
-            _locationHeader = locationHeader;
-        }
-
-        /// <summary>
         /// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="Simple.Http.Status"/>.
         /// </summary>
         /// <param name="httpStatus">The HTTP status code.</param>
@@ -156,7 +197,7 @@ namespace Simple.Http
         /// <example>
         /// Status status = 404 + "Not Found";
         /// </example>
-        /// <exception cref="System.InvalidCastException"></exception>
+        /// <exception cref="System.InvalidCastException">Thrown when casting an invalid source.</exception>
         public static implicit operator Status(string source)
         {
             try
@@ -170,38 +211,6 @@ namespace Simple.Http
         }
 
         /// <summary>
-        /// Gets the HTTP status code.
-        /// </summary>
-        public int Code
-        {
-            get { return _httpStatusCode; }
-        }
-
-        /// <summary>
-        /// Gets the HTTP status description.
-        /// </summary>
-        public string Description
-        {
-            get { return _httpStatusDescription; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this Status represents success.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this Status represents success; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSuccess
-        {
-            get { return _httpStatusCode >= 200 && _httpStatusCode <= 299; }
-        }
-
-        public string LocationHeader
-        {
-            get { return _locationHeader; }
-        }
-
-        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -210,7 +219,7 @@ namespace Simple.Http
         /// </returns>
         public bool Equals(Status other)
         {
-            return _httpStatusCode == other._httpStatusCode;
+            return this.Code == other.Code;
         }
 
         /// <summary>
@@ -222,9 +231,17 @@ namespace Simple.Http
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (obj.GetType() != typeof (Status)) return false;
-            return Equals((Status) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (obj.GetType() != typeof(Status))
+            {
+                return false;
+            }
+
+            return base.Equals((Status)obj);
         }
 
         /// <summary>
@@ -235,14 +252,14 @@ namespace Simple.Http
         /// </returns>
         public override int GetHashCode()
         {
-            return _httpStatusCode;
+            return this.Code;
         }
 
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
+        /// <param name="left">The left side.</param>
+        /// <param name="right">The right side.</param>
         /// <returns>
         /// The result of the operator.
         /// </returns>
@@ -254,22 +271,14 @@ namespace Simple.Http
         /// <summary>
         /// Implements the operator !=.
         /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
+        /// <param name="left">The left side.</param>
+        /// <param name="right">The right side.</param>
         /// <returns>
         /// The result of the operator.
         /// </returns>
         public static bool operator !=(Status left, Status right)
         {
             return !left.Equals(right);
-        }
-
-        private class StatusLookupCollection : KeyedCollection<int,Status>
-        {
-            protected override int GetKeyForItem(Status item)
-            {
-                return item.Code;
-            }
         }
 
         /// <summary>
@@ -280,7 +289,15 @@ namespace Simple.Http
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0} {1}", Code, Description);
+            return string.Format("{0} {1}", this.Code, this.Description);
+        }
+
+        private class StatusLookupCollection : KeyedCollection<int, Status>
+        {
+            protected override int GetKeyForItem(Status item)
+            {
+                return item.Code;
+            }
         }
     }
 }

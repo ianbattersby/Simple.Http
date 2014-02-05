@@ -1,20 +1,34 @@
+// -----------------------------------------------------------------------------------------------internal ---------------------
+// <copyright file="Comparer.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the Comparer type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Helpers
 {
     using System;
     using System.Collections.Generic;
 
-    sealed class Comparer<T> : IComparer<T>
+    internal sealed class Comparer<T> : IComparer<T>
     {
-        private readonly Func<T, T, int> _compare; 
+        private readonly Func<T, T, int> compare;
+
         public Comparer(Func<T, T, int> compare)
         {
-            if (compare == null) throw new ArgumentNullException("compare");
-            _compare = compare;
+            if (compare == null)
+            {
+                throw new ArgumentNullException("compare");
+            }
+
+            this.compare = compare;
         }
 
         public int Compare(T x, T y)
         {
-            return _compare(x, y);
+            return this.compare(x, y);
         }
     }
 }

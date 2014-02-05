@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Simple.Http.Xml.Tests
 {
@@ -32,13 +30,13 @@ namespace Simple.Http.Xml.Tests
             }
             Assert.NotNull(actual);
 
-	        const string expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
+	        const string Expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
 	                                "       xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
 	                                "  <CustomerId>42</CustomerId>"+
 	                                "  <Id>54</Id>"+
 	                                "</Order>";
 
-			XElement.Parse(actual).ShouldEqual(expected);
+			XElement.Parse(actual).ShouldEqual(Expected);
         }
         
         [Fact]
@@ -59,7 +57,7 @@ namespace Simple.Http.Xml.Tests
             }
             Assert.NotNull(actual);
 
-	        const string expected = "<?xml version='1.0' encoding='utf-8'?>" +
+	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
 	                                "<Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
 	                                "          xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
 	                                "  <Id>42</Id>" +
@@ -67,7 +65,7 @@ namespace Simple.Http.Xml.Tests
 	                                "  <link href='/customer/42' rel='self' type='application/vnd.customer+xml' xmlns='' />" +
 	                                "</Customer>";
 
-			XElement.Parse(actual).ShouldEqual(expected);
+			XElement.Parse(actual).ShouldEqual(Expected);
         }
         
         [Fact]
@@ -88,7 +86,7 @@ namespace Simple.Http.Xml.Tests
             }
             Assert.NotNull(actual);
 
-	        const string expected = "<?xml version='1.0' encoding='utf-8'?>" +
+	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
 	                                "<Customers>" +
 	                                "  <Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
 	                                "            xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
@@ -98,7 +96,7 @@ namespace Simple.Http.Xml.Tests
 	                                "  </Customer>" +
 	                                "</Customers>";
 			
-			XElement.Parse(actual).ShouldEqual(expected);
+			XElement.Parse(actual).ShouldEqual(Expected);
         }
     }
 

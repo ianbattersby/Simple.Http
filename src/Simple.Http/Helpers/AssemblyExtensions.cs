@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AssemblyExtensions.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Helpful extension methods for <see cref="Assembly" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Helpers
 {
     using System;

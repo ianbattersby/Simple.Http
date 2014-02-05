@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CacheOptions.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Carries information on how to cache a resource.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Protocol
 {
     using System;
@@ -14,8 +23,8 @@ namespace Simple.Http.Protocol
         /// </summary>
         public static readonly CacheOptions DisableCaching = new CacheOptions();
 
-        private readonly DateTime? _absoluteExpiry;
-        private readonly TimeSpan? _slidingExpiry;
+        private readonly DateTime? absoluteExpiry;
+        private readonly TimeSpan? slidingExpiry;
 
         private CacheOptions()
         {
@@ -28,7 +37,7 @@ namespace Simple.Http.Protocol
         /// <remarks>Use this constructor when you want to specify absolute expiry.</remarks>
         public CacheOptions(DateTime absoluteExpiry)
         {
-            _absoluteExpiry = absoluteExpiry;
+            this.absoluteExpiry = absoluteExpiry;
         }
 
         /// <summary>
@@ -38,7 +47,7 @@ namespace Simple.Http.Protocol
         /// <remarks>Use this constructor when you want to specify sliding expiry.</remarks>
         public CacheOptions(TimeSpan slidingExpiry)
         {
-            _slidingExpiry = slidingExpiry;
+            this.slidingExpiry = slidingExpiry;
         }
 
         /// <summary>
@@ -46,7 +55,7 @@ namespace Simple.Http.Protocol
         /// </summary>
         public TimeSpan? SlidingExpiry
         {
-            get { return _slidingExpiry; }
+            get { return this.slidingExpiry; }
         }
 
         /// <summary>
@@ -54,7 +63,7 @@ namespace Simple.Http.Protocol
         /// </summary>
         public DateTime? AbsoluteExpiry
         {
-            get { return _absoluteExpiry; }
+            get { return this.absoluteExpiry; }
         }
 
         /// <summary>
@@ -65,7 +74,7 @@ namespace Simple.Http.Protocol
         /// </value>
         public bool Disable
         {
-            get { return !(_slidingExpiry.HasValue || _absoluteExpiry.HasValue); }
+            get { return !(this.slidingExpiry.HasValue || this.absoluteExpiry.HasValue); }
         }
 
         /// <summary>
@@ -88,11 +97,13 @@ namespace Simple.Http.Protocol
         /// <returns>The Cache-Control header string.</returns>
         public string ToHeaderString()
         {
-            var builder = new StringBuilder(CacheLevelToString(Level));
-            if (SlidingExpiry.HasValue)
+            var builder = new StringBuilder(CacheLevelToString(this.Level));
+
+            if (this.SlidingExpiry.HasValue)
             {
-                builder.AppendFormat(", max-age={0}", SlidingExpiry.Value.TotalSeconds);
+                builder.AppendFormat(", max-age={0}", this.SlidingExpiry.Value.TotalSeconds);
             }
+
             return builder.ToString();
         }
 
@@ -102,9 +113,11 @@ namespace Simple.Http.Protocol
             {
                 case CacheLevel.Public:
                     return "public";
+
                 case CacheLevel.Private:
                     return "private";
             }
+
             return "no-cache";
         }
     }

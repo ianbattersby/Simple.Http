@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Hosting
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="StartupTaskRunner.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Runs startup tasks (in types with the <see cref="IStartupTask" /> interface). Should be called from the Hosting system.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Hosting
 {
     using System;
     using System.Diagnostics;
@@ -10,7 +19,7 @@
     /// </summary>
     public sealed class StartupTaskRunner
     {
-        private static readonly Type StartupTaskType = typeof (IStartupTask);
+        private static readonly Type StartupTaskType = typeof(IStartupTask);
 
         /// <summary>
         /// Runs the startup tasks.

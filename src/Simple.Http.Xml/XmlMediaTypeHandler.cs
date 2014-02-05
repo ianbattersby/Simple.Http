@@ -1,19 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="XmlMediaTypeHandler.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the XmlMediaTypeHandler type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Xml
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Linq;
+
     using Inflector;
-    using Helpers;
-    using Links;
-    using MediaTypeHandling;
+
+    using Simple.Http.Helpers;
+    using Simple.Http.Links;
+    using Simple.Http.MediaTypeHandling;
 
     [MediaTypes(MediaType.Xml, "application/*+xml")]
     public class XmlMediaTypeHandler : IMediaTypeHandler
@@ -29,6 +39,7 @@ namespace Simple.Http.Xml
             if (content.Model != null)
             {
                 var enumerable = content.Model as IEnumerable<object>;
+
                 if (enumerable != null)
                 {
                     WriteList(outputStream, enumerable);
@@ -53,14 +64,17 @@ namespace Simple.Http.Xml
         private static void WriteList(Stream outputStream, IEnumerable<object> enumerable)
         {
             XElement collection = null;
+            
             foreach (var element in ProcessList(enumerable))
             {
                 if (collection == null)
                 {
                     collection = new XElement(element.Name.LocalName.Pluralize());
                 }
+                
                 collection.Add(element);
             }
+
             if (collection != null)
             {
                 WriteXml(outputStream, collection);
@@ -69,7 +83,8 @@ namespace Simple.Http.Xml
 
         private static IEnumerable<XElement> ProcessList(IEnumerable<object> source)
         {
-            bool skipLinkCheck = false;
+            var skipLinkCheck = false;
+            
             foreach (var o in source)
             {
                 if (!skipLinkCheck)
@@ -129,13 +144,22 @@ namespace Simple.Http.Xml
                 linkElement.SetAttributeValue("type", EnsureXml(link.Type));
                 xml.Add(linkElement);
             }
+
             return xml;
         }
 
         private static string EnsureXml(string type)
         {
-            if (string.IsNullOrWhiteSpace(type)) return MediaType.Xml;
-            if (type.EndsWith("xml")) return type;
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                return MediaType.Xml;
+            }
+
+            if (type.EndsWith("xml"))
+            {
+                return type;
+            }
+
             return type + "+xml";
         }
     }

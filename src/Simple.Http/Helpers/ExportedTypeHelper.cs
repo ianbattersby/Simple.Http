@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ExportedTypeHelper.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   For working with type reflection at runtime.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Helpers
 {
     using System;
@@ -5,7 +14,6 @@ namespace Simple.Http.Helpers
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Reflection.Emit;
 
     /// <summary>
     /// For working with type reflection at runtime.

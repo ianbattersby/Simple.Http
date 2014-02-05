@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="BehaviorAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Base class for <see cref="RequestBehaviorAttribute" />, <see cref="ResponseBehaviorAttribute" /> and <see cref="OutputBehaviorAttribute" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Behaviors
 {
     using System;
@@ -8,7 +17,7 @@ namespace Simple.Http.Behaviors
     [AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = false)]
     public abstract class BehaviorAttribute : Attribute
     {
-        private readonly Type _implementingType;
+        private readonly Type implementingType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BehaviorAttribute"/> class.
@@ -16,7 +25,7 @@ namespace Simple.Http.Behaviors
         /// <param name="implementingType">The type which implements the behavior.</param>
         protected BehaviorAttribute(Type implementingType)
         {
-            _implementingType = implementingType;
+            this.implementingType = implementingType;
         }
 
         /// <summary>
@@ -27,7 +36,7 @@ namespace Simple.Http.Behaviors
         /// </value>
         public Type ImplementingType
         {
-            get { return _implementingType; }
+            get { return this.implementingType; }
         }
 
         /// <summary>

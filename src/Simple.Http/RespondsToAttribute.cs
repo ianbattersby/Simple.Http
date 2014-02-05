@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RespondsToAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Specifies which Content-Types a handler can handle in the Request body.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
     using System;
@@ -11,7 +20,7 @@ namespace Simple.Http
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public sealed class RespondsToAttribute : Attribute
     {
-        private readonly string[] _contentTypes;
+        private readonly string[] contentTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RespondsToAttribute"/> class.
@@ -19,7 +28,7 @@ namespace Simple.Http
         /// <param name="contentTypes">The types which the handler accepts.</param>
         public RespondsToAttribute(params string[] contentTypes)
         {
-            _contentTypes = contentTypes;
+            this.contentTypes = contentTypes;
         }
 
         /// <summary>
@@ -27,12 +36,12 @@ namespace Simple.Http
         /// </summary>
         public ReadOnlyCollection<string> ContentTypes
         {
-            get { return Array.AsReadOnly(_contentTypes); }
+            get { return Array.AsReadOnly(this.contentTypes); }
         }
 
         internal static IEnumerable<RespondsToAttribute> Get(Type type)
         {
-            return GetCustomAttributes(type, typeof (RespondsToAttribute))
+            return GetCustomAttributes(type, typeof(RespondsToAttribute))
                 .Cast<RespondsToAttribute>();
         }
     }

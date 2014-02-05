@@ -1,13 +1,6 @@
 ﻿namespace Simple.Http.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.IO;
-    using System.Text;
     using Behaviors;
-    using MediaTypeHandling;
-    using Mocks;
 
     using Simple.Http.MediaTypeHandling;
 

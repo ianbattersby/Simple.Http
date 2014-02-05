@@ -1,7 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ExpressionHelper.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the ExpressionHelper type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Helpers
 {
@@ -23,12 +27,16 @@ namespace Simple.Http.Helpers
 
             if (memberExpression != null)
             {
-                if (memberExpression.Expression == null) // Static
+                if (memberExpression.Expression == null)
                 {
+                    // Static
                     return TryGetValue(memberExpression.Member, out value);
                 }
+
                 object memberValue;
+
                 constantExpression = memberExpression.Expression as ConstantExpression;
+
                 if (constantExpression != null)
                 {
                     memberValue = constantExpression.Value;
@@ -41,18 +49,22 @@ namespace Simple.Http.Helpers
                         return false;
                     }
                 }
+
                 if (memberValue == null)
                 {
                     value = null;
                     return false;
                 }
+
                 var members = memberValue.GetType().GetMember(memberExpression.Member.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (members.Length != 1)
+
+                if (members.Length == 1)
                 {
-                    value = null;
-                    return false;
+                    return TryGetValue(members[0], out value, memberValue);
                 }
-                return TryGetValue(members[0], out value, memberValue);
+
+                value = null;
+                return false;
             }
 
             value = null;
@@ -62,18 +74,23 @@ namespace Simple.Http.Helpers
         private static bool TryGetValue(MemberInfo memberInfo, out object value, object memberValue = null)
         {
             var propertyInfo = memberInfo as PropertyInfo;
+
             if (propertyInfo != null)
             {
                 value = propertyInfo.GetValue(memberValue, null);
                 return true;
             }
+
             var fieldInfo = memberInfo as FieldInfo;
+
             if (fieldInfo != null)
             {
                 value = fieldInfo.GetValue(memberValue);
                 return true;
             }
+
             value = null;
+
             return false;
         }
     }

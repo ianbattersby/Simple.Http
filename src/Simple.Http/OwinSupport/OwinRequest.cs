@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="OwinRequest.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the OwinRequest type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.OwinSupport
 {
     using System;
@@ -9,7 +18,7 @@ namespace Simple.Http.OwinSupport
 
     internal class OwinRequest : IRequest
     {
-        private readonly HttpContext _context;
+        private readonly HttpContext context;
 
         public OwinRequest(IDictionary<string, object> env, IDictionary<string, string[]> requestHeaders, Stream inputStream)
         {
@@ -17,18 +26,21 @@ namespace Simple.Http.OwinSupport
             this.Headers = requestHeaders;
             this.InputStream = inputStream;
             this.Url = new Uri(MakeUriString(env, requestHeaders));
+
             if (env.ContainsKey(OwinKeys.QueryString))
             {
-                this.QueryString = QueryStringParser.Parse((string) env[OwinKeys.QueryString]);
+                this.QueryString = QueryStringParser.Parse((string)env[OwinKeys.QueryString]);
             }
             else
             {
                 this.QueryString = new Dictionary<string, string[]>();
             }
+
             object aspNetContext;
+
             if (env.TryGetValue("aspnet.Context", out aspNetContext))
             {
-                this._context = (HttpContext) aspNetContext;
+                this.context = (HttpContext)aspNetContext;
             }
         }
 
@@ -46,11 +58,11 @@ namespace Simple.Http.OwinSupport
         {
             get
             {
-                if (this._context != null)
+                if (this.context != null)
                 {
-                    for (int i = 0; i < this._context.Request.Files.Count; i++)
+                    for (var i = 0; i < this.context.Request.Files.Count; i++)
                     {
-                        yield return new PostedFile(this._context.Request.Files.Get(i));
+                        yield return new PostedFile(this.context.Request.Files.Get(i));
                     }
                 }
             }
@@ -64,17 +76,25 @@ namespace Simple.Http.OwinSupport
         private static string MakeUriString(IDictionary<string, object> env, IDictionary<string, string[]> requestHeaders)
         {
             string[] hostHeaders;
-            string host = "localhost";
+
+            var host = "localhost";
+
             if (requestHeaders.TryGetValue("Host", out hostHeaders) && hostHeaders.Length > 0)
             {
                 host = hostHeaders[0];
             }
-            if (string.IsNullOrWhiteSpace(host)) host = "localhost";
+
+            if (string.IsNullOrWhiteSpace(host))
+            {
+                host = "localhost";
+            }
+
             var scheme = env.GetValueOrDefault(OwinKeys.Scheme, "http");
             var pathBase = env.GetValueOrDefault(OwinKeys.PathBase, string.Empty);
             var path = env.GetValueOrDefault(OwinKeys.Path, "/");
             var uri = string.Format("{0}://{1}{2}{3}", scheme, host, pathBase, path);
             object queryString;
+
             if (env.TryGetValue(OwinKeys.QueryString, out queryString))
             {
                 if (queryString != null && !string.IsNullOrWhiteSpace((string)queryString))
@@ -82,16 +102,8 @@ namespace Simple.Http.OwinSupport
                     uri = uri + "?" + queryString;
                 }
             }
-            return uri;
-        }
-    }
 
-    internal static class DictionaryEx
-    {
-        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue)
-        {
-            TValue value;
-            return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+            return uri;
         }
     }
 }

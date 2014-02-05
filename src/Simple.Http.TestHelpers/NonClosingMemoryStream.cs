@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Simple.Http.TestHelpers
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Runtime.Remoting;
 
     public class NonClosingMemoryStream : Stream
     {
-        private readonly MemoryStream _stream;
+        private readonly MemoryStream stream;
 
         public NonClosingMemoryStream(MemoryStream stream)
         {
-            _stream = stream;
+            this.stream = stream;
         }
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.Security.SecurityException">The immediate caller does not have infrastructure permission. </exception><filterpriority>2</filterpriority><PermissionSet><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="RemotingConfiguration, Infrastructure"/></PermissionSet>
         public override object InitializeLifetimeService()
         {
-            return _stream.InitializeLifetimeService();
+            return this.stream.InitializeLifetimeService();
         }
 
         /// <summary>
@@ -36,9 +34,10 @@ namespace Simple.Http.TestHelpers
         /// Information required to generate a proxy.
         /// </returns>
         /// <param name="requestedType">The <see cref="T:System.Type"/> of the object that the new <see cref="T:System.Runtime.Remoting.ObjRef"/> will reference. </param><exception cref="T:System.Runtime.Remoting.RemotingException">This instance is not a valid remoting object. </exception><exception cref="T:System.Security.SecurityException">The immediate caller does not have infrastructure permission. </exception><filterpriority>2</filterpriority><PermissionSet><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="Infrastructure"/></PermissionSet>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         public override ObjRef CreateObjRef(Type requestedType)
         {
-            return _stream.CreateObjRef(requestedType);
+            return this.stream.CreateObjRef(requestedType);
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="buffer">The buffer to read the data into. </param><param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data read from the stream. </param><param name="count">The maximum number of bytes to read. </param><param name="callback">An optional asynchronous callback, to be called when the read is complete. </param><param name="state">A user-provided object that distinguishes this particular asynchronous read request from other requests. </param><exception cref="T:System.IO.IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception><exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><exception cref="T:System.NotSupportedException">The current Stream implementation does not support the read operation. </exception><filterpriority>2</filterpriority>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            return _stream.BeginRead(buffer, offset, count, callback, state);
+            return this.stream.BeginRead(buffer, offset, count, callback, state);
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="asyncResult">The reference to the pending asynchronous request to finish. </param><exception cref="T:System.ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="T:System.ArgumentException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception><exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
         public override int EndRead(IAsyncResult asyncResult)
         {
-            return _stream.EndRead(asyncResult);
+            return this.stream.EndRead(asyncResult);
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="buffer">The buffer to write data from. </param><param name="offset">The byte offset in <paramref name="buffer"/> from which to begin writing. </param><param name="count">The maximum number of bytes to write. </param><param name="callback">An optional asynchronous callback, to be called when the write is complete. </param><param name="state">A user-provided object that distinguishes this particular asynchronous write request from other requests. </param><exception cref="T:System.IO.IOException">Attempted an asynchronous write past the end of the stream, or a disk error occurs. </exception><exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><exception cref="T:System.NotSupportedException">The current Stream implementation does not support the write operation. </exception><filterpriority>2</filterpriority>
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            return _stream.BeginWrite(buffer, offset, count, callback, state);
+            return this.stream.BeginWrite(buffer, offset, count, callback, state);
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="asyncResult">A reference to the outstanding asynchronous I/O request. </param><exception cref="T:System.ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="T:System.ArgumentException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception><exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
         public override void EndWrite(IAsyncResult asyncResult)
         {
-            _stream.EndWrite(asyncResult);
+            this.stream.EndWrite(asyncResult);
         }
 
         /// <summary>
@@ -110,11 +109,11 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public override bool CanTimeout
         {
-            get { return _stream.CanTimeout; }
+            get { return this.stream.CanTimeout; }
         }
 
         /// <summary>
-        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out. 
+        /// Gets or sets a value, in milliseconds, that determines how long the stream will attempt to read before timing out. 
         /// </summary>
         /// <returns>
         /// A value, in miliseconds, that determines how long the stream will attempt to read before timing out.
@@ -122,12 +121,12 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception><filterpriority>2</filterpriority>
         public override int ReadTimeout
         {
-            get { return _stream.ReadTimeout; }
-            set { _stream.ReadTimeout = value; }
+            get { return this.stream.ReadTimeout; }
+            set { this.stream.ReadTimeout = value; }
         }
 
         /// <summary>
-        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out. 
+        /// Gets or sets a value, in milliseconds, that determines how long the stream will attempt to write before timing out. 
         /// </summary>
         /// <returns>
         /// A value, in miliseconds, that determines how long the stream will attempt to write before timing out.
@@ -135,8 +134,8 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception><filterpriority>2</filterpriority>
         public override int WriteTimeout
         {
-            get { return _stream.WriteTimeout; }
-            set { _stream.WriteTimeout = value; }
+            get { return this.stream.WriteTimeout; }
+            set { this.stream.WriteTimeout = value; }
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public override void Flush()
         {
-            _stream.Flush();
+            this.stream.Flush();
         }
 
         /// <summary>
@@ -157,7 +156,7 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.UnauthorizedAccessException">The MemoryStream instance was not created with a publicly visible buffer. </exception><filterpriority>2</filterpriority>
         public byte[] GetBuffer()
         {
-            return _stream.GetBuffer();
+            return this.stream.GetBuffer();
         }
 
         /// <summary>
@@ -169,7 +168,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="buffer">When this method returns, contains the specified byte array with the values between <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1) replaced by the characters read from the current stream. </param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin storing data from the current stream. </param><param name="count">The maximum number of bytes to read. </param><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception><exception cref="T:System.ArgumentException"><paramref name="offset"/> subtracted from the buffer length is less than <paramref name="count"/>. </exception><exception cref="T:System.ObjectDisposedException">The current stream instance is closed. </exception><filterpriority>2</filterpriority>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            return _stream.Read(buffer, offset, count);
+            return this.stream.Read(buffer, offset, count);
         }
 
         /// <summary>
@@ -181,7 +180,7 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.ObjectDisposedException">The current stream instance is closed. </exception><filterpriority>2</filterpriority>
         public override int ReadByte()
         {
-            return _stream.ReadByte();
+            return this.stream.ReadByte();
         }
 
         /// <summary>
@@ -193,7 +192,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="offset">The new position within the stream. This is relative to the <paramref name="loc"/> parameter, and can be positive or negative. </param><param name="loc">A value of type <see cref="T:System.IO.SeekOrigin"/>, which acts as the seek reference point. </param><exception cref="T:System.IO.IOException">Seeking is attempted before the beginning of the stream. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> is greater than <see cref="F:System.Int32.MaxValue"/>. </exception><exception cref="T:System.ArgumentException">There is an invalid <see cref="T:System.IO.SeekOrigin"/>. -or-<paramref name="offset"/> caused an arithmetic overflow.</exception><exception cref="T:System.ObjectDisposedException">The current stream instance is closed. </exception><filterpriority>2</filterpriority>
         public override long Seek(long offset, SeekOrigin loc)
         {
-            return _stream.Seek(offset, loc);
+            return this.stream.Seek(offset, loc);
         }
 
         /// <summary>
@@ -202,7 +201,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="value">The value at which to set the length. </param><exception cref="T:System.NotSupportedException">The current stream is not resizable and <paramref name="value"/> is larger than the current capacity.-or- The current stream does not support writing. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="value"/> is negative or is greater than the maximum length of the <see cref="T:System.IO.MemoryStream"/>, where the maximum length is(<see cref="F:System.Int32.MaxValue"/> - origin), and origin is the index into the underlying buffer at which the stream starts. </exception><filterpriority>2</filterpriority>
         public override void SetLength(long value)
         {
-            _stream.SetLength(value);
+            this.stream.SetLength(value);
         }
 
         /// <summary>
@@ -214,7 +213,7 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public byte[] ToArray()
         {
-            return _stream.ToArray();
+            return this.stream.ToArray();
         }
 
         /// <summary>
@@ -223,7 +222,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="buffer">The buffer to write data from. </param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin copying bytes to the current stream. </param><param name="count">The maximum number of bytes to write. </param><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception><exception cref="T:System.NotSupportedException">The stream does not support writing. For additional information see <see cref="P:System.IO.Stream.CanWrite"/>.-or- The current position is closer than <paramref name="count"/> bytes to the end of the stream, and the capacity cannot be modified. </exception><exception cref="T:System.ArgumentException"><paramref name="offset"/> subtracted from the buffer length is less than <paramref name="count"/>. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> are negative. </exception><exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.ObjectDisposedException">The current stream instance is closed. </exception><filterpriority>2</filterpriority>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            _stream.Write(buffer, offset, count);
+            this.stream.Write(buffer, offset, count);
         }
 
         /// <summary>
@@ -232,7 +231,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="value">The byte to write. </param><exception cref="T:System.NotSupportedException">The stream does not support writing. For additional information see <see cref="P:System.IO.Stream.CanWrite"/>.-or- The current position is at the end of the stream, and the capacity cannot be modified. </exception><exception cref="T:System.ObjectDisposedException">The current stream is closed. </exception><filterpriority>2</filterpriority>
         public override void WriteByte(byte value)
         {
-            _stream.WriteByte(value);
+            this.stream.WriteByte(value);
         }
 
         /// <summary>
@@ -241,7 +240,7 @@ namespace Simple.Http.TestHelpers
         /// <param name="stream">The stream to write this memory stream to. </param><exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is null. </exception><exception cref="T:System.ObjectDisposedException">The current or target stream is closed. </exception><filterpriority>2</filterpriority>
         public void WriteTo(Stream stream)
         {
-            _stream.WriteTo(stream);
+            this.stream.WriteTo(stream);
         }
 
         /// <summary>
@@ -253,7 +252,7 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public override bool CanRead
         {
-            get { return _stream.CanRead; }
+            get { return this.stream.CanRead; }
         }
 
         /// <summary>
@@ -265,7 +264,7 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public override bool CanSeek
         {
-            get { return _stream.CanSeek; }
+            get { return this.stream.CanSeek; }
         }
 
         /// <summary>
@@ -277,7 +276,7 @@ namespace Simple.Http.TestHelpers
         /// <filterpriority>2</filterpriority>
         public override bool CanWrite
         {
-            get { return _stream.CanWrite; }
+            get { return this.stream.CanWrite; }
         }
 
         /// <summary>
@@ -289,8 +288,8 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.ArgumentOutOfRangeException">A capacity is set that is negative or less than the current length of the stream. </exception><exception cref="T:System.ObjectDisposedException">The current stream is closed. </exception><exception cref="T:System.NotSupportedException">set is invoked on a stream whose capacity cannot be modified. </exception><filterpriority>2</filterpriority>
         public int Capacity
         {
-            get { return _stream.Capacity; }
-            set { _stream.Capacity = value; }
+            get { return this.stream.Capacity; }
+            set { this.stream.Capacity = value; }
         }
 
         /// <summary>
@@ -302,7 +301,7 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.ObjectDisposedException">The stream is closed. </exception><filterpriority>2</filterpriority>
         public override long Length
         {
-            get { return _stream.Length; }
+            get { return this.stream.Length; }
         }
 
         /// <summary>
@@ -314,15 +313,15 @@ namespace Simple.Http.TestHelpers
         /// <exception cref="T:System.ArgumentOutOfRangeException">The position is set to a negative value or a value greater than <see cref="F:System.Int32.MaxValue"/>. </exception><exception cref="T:System.ObjectDisposedException">The stream is closed. </exception><filterpriority>2</filterpriority>
         public override long Position
         {
-            get { return _stream.Position; }
-            set { _stream.Position = value; }
+            get { return this.stream.Position; }
+            set { this.stream.Position = value; }
         }
 
         public void ForceDispose()
         {
             try
             {
-                _stream.Dispose();
+                this.stream.Dispose();
             }
 // ReSharper disable EmptyGeneralCatchClause
             catch { }

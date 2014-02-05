@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ResponseBehaviorAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Should be applied to behavior interfaces that work in the Response phase of a request/response cycle.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Behaviors
 {
     using System;
@@ -20,7 +29,7 @@ namespace Simple.Http.Behaviors
         /// <summary>
         /// Gets the <see cref="ResponseBehaviorAttribute"/> for the specified type.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The type to inspect.</param>
         /// <returns>The <see cref="ResponseBehaviorAttribute"/>, or <c>null</c> if it is not applied to the type.</returns>
         public static ResponseBehaviorAttribute Get(Type type)
         {

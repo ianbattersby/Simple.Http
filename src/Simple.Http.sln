@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{71E6E108-5645-45D1-B128-E6225253924D}"
 EndProject
@@ -34,6 +34,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2EA3D337-D73D-4470-85E2-9AD037F202D6}"
 	ProjectSection(SolutionItems) = preProject
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
+		..\rakefile.rb = ..\rakefile.rb
 		..\VERSION.txt = ..\VERSION.txt
 	EndProjectSection
 EndProject
@@ -50,6 +51,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7DD7CF
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".stylecop", ".stylecop", "{095F205D-B778-4E34-8238-3CA36C4F88B0}"
+	ProjectSection(SolutionItems) = preProject
+		.stylecop\Settings.StyleCop = .stylecop\Settings.StyleCop
+		.stylecop\Tests.Settings.StyleCop = .stylecop\Tests.Settings.StyleCop
 	EndProjectSection
 EndProject
 Global

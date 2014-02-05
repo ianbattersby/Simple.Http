@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Simple.Http.ContentTypeHandling.Tests
 {
@@ -55,11 +52,11 @@ namespace Simple.Http.ContentTypeHandling.Tests
         {
             var table = new MediaTypeHandlerTable();
             string matchedType;
-            const string customType = "application/vnd.test.towel+json";
-            var actual = table.GetMediaTypeHandler(new[] {"application/foo", customType}, out matchedType);
+            const string CustomType = "application/vnd.test.towel+json";
+            var actual = table.GetMediaTypeHandler(new[] {"application/foo", CustomType}, out matchedType);
             Assert.NotNull(actual);
             Assert.IsType<TestMediaTypeHandler>(actual);
-            Assert.Equal(customType, matchedType);
+            Assert.Equal(CustomType, matchedType);
         }
 
         [Fact]
@@ -67,11 +64,11 @@ namespace Simple.Http.ContentTypeHandling.Tests
         {
             var table = new MediaTypeHandlerTable();
             string matchedType;
-            const string customType = "application/hal+json";
-            var actual = table.GetMediaTypeHandler(new[] {customType}, out matchedType);
+            const string CustomType = "application/hal+json";
+            var actual = table.GetMediaTypeHandler(new[] {CustomType}, out matchedType);
             Assert.NotNull(actual);
             Assert.IsType<HalMediaTypeHandler>(actual);
-            Assert.Equal(customType, matchedType);
+            Assert.Equal(CustomType, matchedType);
         }
     }
 

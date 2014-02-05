@@ -1,7 +1,16 @@
-using System.Collections.Generic;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IContext.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents the context for a request/response cycle.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Protocol
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Represents the context for a request/response cycle.
     /// </summary>

@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MediaTypesAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Specifies which content types an implementation of <see cref="IMediaTypeHandler" /> is used for.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.MediaTypeHandling
 {
     using System;
@@ -10,7 +19,7 @@ namespace Simple.Http.MediaTypeHandling
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class MediaTypesAttribute : Attribute
     {
-        private readonly string[] _contentTypes;
+        private readonly string[] contentTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MediaTypesAttribute"/> class.
@@ -18,7 +27,7 @@ namespace Simple.Http.MediaTypeHandling
         /// <param name="contentTypes">The content types.</param>
         public MediaTypesAttribute(params string[] contentTypes)
         {
-            _contentTypes = contentTypes;
+            this.contentTypes = contentTypes;
         }
 
         /// <summary>
@@ -26,17 +35,17 @@ namespace Simple.Http.MediaTypeHandling
         /// </summary>
         public string[] ContentTypes
         {
-            get { return _contentTypes; }
+            get { return this.contentTypes; }
         }
 
         /// <summary>
         /// Gets a collection of <see cref="MediaTypesAttribute"/> instances for a specified type.
         /// </summary>
-        /// <param name="type">The type.</param>
+        /// <param name="type">The handler type to inspect.</param>
         /// <returns>A list of <see cref="MediaTypesAttribute"/> attributes applied to the type.</returns>
         public static IEnumerable<MediaTypesAttribute> Get(Type type)
         {
-            return GetCustomAttributes(type, typeof (MediaTypesAttribute)).Cast<MediaTypesAttribute>();
+            return GetCustomAttributes(type, typeof(MediaTypesAttribute)).Cast<MediaTypesAttribute>();
         }
     }
 }

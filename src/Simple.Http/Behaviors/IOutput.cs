@@ -1,12 +1,18 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IOutput.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Adds output functionality to an handler.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Behaviors
 {
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Adds output functionality to an handler.
     /// </summary>
     /// <typeparam name="TOutput">The type of the output.</typeparam>
-    /// <remarks>For asynchronous handlers, consider using <see cref="IOutputAsync{TOutput}"/></remarks>
     [OutputBehavior(typeof(Implementations.WriteOutput))]
     public interface IOutput<out TOutput>
     {
@@ -14,19 +20,5 @@ namespace Simple.Http.Behaviors
         /// Gets the output.
         /// </summary>
         TOutput Output { get; }
-    }
-
-    /// <summary>
-    /// Adds asynchronous output functionality to an handler.
-    /// </summary>
-    /// <typeparam name="TOutput">The type of the output.</typeparam>
-    /// <remarks>Use this interface instead of <see cref="IOutput{T}"/> to preserve an asynchronous pipeline.</remarks>
-    [OutputBehavior(typeof(Implementations.WriteOutputAsync))]
-    public interface IOutputAsync<TOutput>
-    {
-        /// <summary>
-        /// Gets a <see cref="Task{T}"/> which asynchronously returns the output.
-        /// </summary>
-        Task<TOutput> Output { get; }
     }
 }

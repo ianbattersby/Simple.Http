@@ -1,13 +1,21 @@
-using System;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="WriteView.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the WriteView type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.CodeGeneration
 {
+    using System;
     using System.Collections.Generic;
-    using Helpers;
-    using Protocol;
-    using MediaTypeHandling;
 
-    static class WriteView
+    using Simple.Http.MediaTypeHandling;
+    using Simple.Http.Protocol;
+
+    internal static class WriteView
     {
         public static void Impl(object handler, IContext context)
         {
@@ -16,15 +24,24 @@ namespace Simple.Http.CodeGeneration
 
         private static void WriteUsingMediaTypeHandler(object handler, IContext context)
         {
-			if (context.Request.HttpMethod == null) throw new Exception("No HTTP Method given");
-            if (context.Request.HttpMethod.Equals("HEAD")) return;
+            if (context.Request.HttpMethod == null)
+            {
+                throw new Exception("No HTTP Method given");
+            }
+
+            if (context.Request.HttpMethod.Equals("HEAD"))
+            {
+                return;
+            }
+
             IMediaTypeHandler mediaTypeHandler;
             var acceptedTypes = context.Request.GetAccept();
+
             if (TryGetMediaTypeHandler(context, acceptedTypes, out mediaTypeHandler))
             {
                 context.Response.SetContentType(mediaTypeHandler.GetContentType(acceptedTypes));
 
-                context.Response.WriteFunction = (stream) =>
+                context.Response.WriteFunction = stream =>
                     {
                         var content = new Content(context.Request.Url, handler, null);
                         return mediaTypeHandler.Write(content, stream);
@@ -39,6 +56,7 @@ namespace Simple.Http.CodeGeneration
                 mediaTypeHandler = null;
                 return false;
             }
+            
             try
             {
                 string matchedType;
@@ -50,6 +68,7 @@ namespace Simple.Http.CodeGeneration
                 mediaTypeHandler = null;
                 return false;
             }
+            
             return true;
         }
     }

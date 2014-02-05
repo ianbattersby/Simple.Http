@@ -1,4 +1,12 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ScopedHandler.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Default implementation of <see cref="IScopedHandler" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.CodeGeneration
 {
     using DependencyInjection;
@@ -6,17 +14,9 @@ namespace Simple.Http.CodeGeneration
     /// <summary>
     /// Default implementation of <see cref="IScopedHandler"/>.
     /// </summary>
-    public sealed class ScopedHandler: IScopedHandler
+    public sealed class ScopedHandler : IScopedHandler
     {
-        private readonly ISimpleContainerScope _scope;
-
-        /// <summary>
-        /// Gets the handler.
-        /// </summary>
-        /// <value>
-        /// The handler.
-        /// </value>
-        public object Handler { get; private set; }
+        private readonly ISimpleContainerScope scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScopedHandler" /> class.
@@ -25,9 +25,17 @@ namespace Simple.Http.CodeGeneration
         /// <param name="scope">The scope.</param>
         public ScopedHandler(object handler, ISimpleContainerScope scope)
         {
-            Handler = handler;
-            _scope = scope;
+            this.Handler = handler;
+            this.scope = scope;
         }
+
+        /// <summary>
+        /// Gets the handler.
+        /// </summary>
+        /// <value>
+        /// The handler.
+        /// </value>
+        public object Handler { get; private set; }
 
         /// <summary>
         /// Creates the specified handler.
@@ -45,7 +53,7 @@ namespace Simple.Http.CodeGeneration
         /// </summary>
         public void Dispose()
         {
-            _scope.Dispose();
+            this.scope.Dispose();
         }
     }
 }

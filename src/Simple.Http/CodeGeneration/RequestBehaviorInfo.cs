@@ -1,37 +1,44 @@
-﻿namespace Simple.Http.CodeGeneration
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RequestBehaviorInfo.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the RequestBehaviorInfo type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.CodeGeneration
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using Behaviors;
-    using Helpers;
-    using Protocol;
 
-    class RequestBehaviorInfo : BehaviorInfo
+    internal class RequestBehaviorInfo : BehaviorInfo
     {
-        private static List<RequestBehaviorInfo> _cache;
+        private static List<RequestBehaviorInfo> cache;
 
-        public RequestBehaviorInfo(Type behaviorType, Type implementingType, Priority priority) : base(behaviorType, implementingType, priority)
+        public RequestBehaviorInfo(Type behaviorType, Type implementingType, Priority priority)
+            : base(behaviorType, implementingType, priority)
         {
         }
 
         public static IEnumerable<RequestBehaviorInfo> GetInPriorityOrder()
         {
-            if (_cache == null)
+            if (cache == null)
             {
                 var list = FindRequestBehaviorTypes().OrderBy(t => t.Priority).ToList();
-                Interlocked.CompareExchange(ref _cache, list, null);
+                Interlocked.CompareExchange(ref cache, list, null);
             }
 
-            return _cache;
+            return cache;
         }
 
         private static IEnumerable<RequestBehaviorInfo> FindRequestBehaviorTypes()
         {
             return
-                FindBehaviorTypes<RequestBehaviorAttribute, RequestBehaviorInfo>(
+                BehaviorInfo.FindBehaviorTypes<RequestBehaviorAttribute, RequestBehaviorInfo>(
                     (behaviorType, implementingType, priority) => new RequestBehaviorInfo(behaviorType, implementingType, priority));
         }
     }

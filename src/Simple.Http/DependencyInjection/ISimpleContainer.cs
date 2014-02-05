@@ -1,7 +1,16 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ISimpleContainer.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Interface to implement for Dependency Injection.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.DependencyInjection
 {
+    using System;
+
     /// <summary>
     /// Interface to implement for Dependency Injection.
     /// </summary>
@@ -18,7 +27,7 @@ namespace Simple.Http.DependencyInjection
     /// <summary>
     /// Interface to implement for scoped objects created by IoC containers.
     /// </summary>
-    public interface ISimpleContainerScope: IDisposable
+    public interface ISimpleContainerScope : IDisposable
     {
         /// <summary>
         /// Gets an instance of <c>T</c>.

@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RawHtml.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Wraps a string and tells the framework that it should be treated as raw HTML.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
     /// <summary>
@@ -6,11 +15,11 @@ namespace Simple.Http
     /// <remarks>This class is instantiated by implicit casting from <see cref="string"/> instances.</remarks>
     public class RawHtml
     {
-        private readonly string _html;
+        private readonly string html;
 
         internal RawHtml(string html)
         {
-            _html = html;
+            this.html = html;
         }
 
         /// <summary>
@@ -18,7 +27,7 @@ namespace Simple.Http
         /// </summary>
         public string Html
         {
-            get { return _html; }
+            get { return this.html; }
         }
 
         /// <summary>
@@ -29,13 +38,13 @@ namespace Simple.Http
         /// </returns>
         public override string ToString()
         {
-            return _html;
+            return this.html;
         }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Simple.Http.RawHtml"/>.
         /// </summary>
-        /// <param name="html">The HTML.</param>
+        /// <param name="html">The HTML string.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>

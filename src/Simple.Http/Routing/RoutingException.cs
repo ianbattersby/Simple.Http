@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RoutingException.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Thrown when an error occurs in the URI routing system.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Routing
 {
     using System;
@@ -9,14 +18,15 @@ namespace Simple.Http.Routing
     [Serializable]
     public class RoutingException : Exception
     {
-        private readonly string _url;
+        private readonly string url;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutingException"/> class.
         /// </summary>
         /// <param name="url">The URL that triggered the exception.</param>
         public RoutingException(string url)
         {
-            _url = url;
+            this.url = url;
         }
 
         /// <summary>
@@ -24,9 +34,10 @@ namespace Simple.Http.Routing
         /// </summary>
         /// <param name="url">The URL that triggered the exception.</param>
         /// <param name="message">The message.</param>
-        public RoutingException(string url, string message) : base(message)
+        public RoutingException(string url, string message)
+            : base(message)
         {
-            _url = url;
+            this.url = url;
         }
 
         /// <summary>
@@ -35,9 +46,10 @@ namespace Simple.Http.Routing
         /// <param name="url">The URL that triggered the exception.</param>
         /// <param name="message">The message.</param>
         /// <param name="inner">The inner.</param>
-        public RoutingException(string url, string message, Exception inner) : base(message, inner)
+        public RoutingException(string url, string message, Exception inner)
+            : base(message, inner)
         {
-            _url = url;
+            this.url = url;
         }
 
         /// <summary>
@@ -50,9 +62,10 @@ namespace Simple.Http.Routing
         /// <exception cref="T:System.Runtime.Serialization.SerializationException">The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0). </exception>
         protected RoutingException(
             SerializationInfo info,
-            StreamingContext context) : base(info, context)
+            StreamingContext context)
+            : base(info, context)
         {
-            _url = info.GetString("Url");
+            this.url = info.GetString("Url");
         }
 
         /// <summary>
@@ -60,7 +73,7 @@ namespace Simple.Http.Routing
         /// </summary>
         public string Url
         {
-            get { return _url; }
+            get { return this.url; }
         }
 
         /// <summary>
@@ -73,11 +86,11 @@ namespace Simple.Http.Routing
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/>
         ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/>
-        ///   </PermissionSet>
+        /// </PermissionSet>
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("Url", Url);
+            info.AddValue("Url", this.Url);
         }
     }
 }

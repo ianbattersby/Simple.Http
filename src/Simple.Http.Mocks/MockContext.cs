@@ -6,7 +6,7 @@ namespace Simple.Http.Mocks
 
     public class MockContext : IContext
     {
-        private readonly IDictionary<string, object> _variables = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> variables = new Dictionary<string, object>();
 
         public MockContext()
         {
@@ -18,7 +18,7 @@ namespace Simple.Http.Mocks
         public IResponse Response { get; set; }
         public IDictionary<string, object> Variables
         {
-            get { return _variables; }
+            get { return this.variables; }
         }
     }
 }

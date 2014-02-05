@@ -1,45 +1,30 @@
-﻿using Simple.Http.DependencyInjection;
-using StructureMap;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="StructureMapContainer.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the StructureMapContainer type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.StructureMap
 {
+    using Simple.Http.DependencyInjection;
+
+    using global::StructureMap;
+
     public class StructureMapContainer : ISimpleContainer
     {
-        private readonly IContainer _container;
+        private readonly IContainer container;
 
         internal StructureMapContainer(IContainer container)
         {
-            _container = container;
+            this.container = container;
         }
 
         public ISimpleContainerScope BeginScope()
         {
-            return new StructureMapContainerScope(_container.GetNestedContainer());
-        }
-    }
-
-    public class StructureMapContainerScope: ISimpleContainerScope
-    {
-        private readonly IContainer _container;
-
-        internal StructureMapContainerScope(IContainer container)
-        {
-            _container = container;
-        }
-
-        public T Get<T>()
-        {
-        	return IsConcrete<T>() ? _container.GetInstance<T>() : _container.TryGetInstance<T>();
-        }
-
-    	static bool IsConcrete<T>()
-    	{
-    		return !(typeof(T).IsAbstract || typeof(T).IsInterface);
-    	}
-
-    	public void Dispose()
-        {
-            _container.Dispose();
+            return new StructureMapContainerScope(this.container.GetNestedContainer());
         }
     }
 }

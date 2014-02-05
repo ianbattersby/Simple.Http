@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Simple.Http.Tests
+﻿namespace Simple.Http.Tests
 {
     using Helpers;
     using Xunit;
 
     public class UriFromTypeTests
     {
-        private static int StaticIdTest = 42;
-
-        private int _idTest = 42;
+        private const int StaticIdTest = 42;
 
         protected int IdTest
         {
@@ -36,15 +29,15 @@ namespace Simple.Http.Tests
         [Fact]
         public void GetsDynamicUriFromVariable()
         {
-            int id = 42;
-            var actual = UriFromType.Get(() => new Dynamic {Id = id});
+            const int Id = 42;
+            var actual = UriFromType.Get(() => new Dynamic {Id = Id});
             Assert.Equal("/dynamic/42", actual.ToString());
         }
 
         [Fact]
         public void GetsDynamicUriFromField()
         {
-            var actual = UriFromType.Get(() => new Dynamic {Id = _idTest});
+            var actual = UriFromType.Get(() => new Dynamic {Id = IdTest});
             Assert.Equal("/dynamic/42", actual.ToString());
         }
 

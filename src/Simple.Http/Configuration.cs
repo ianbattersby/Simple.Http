@@ -1,7 +1,14 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Configuration.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Default implementation of <see cref="IConfiguration" />.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
-    using System;
-    using System.Collections.Generic;
     using DependencyInjection;
     using MediaTypeHandling;
 
@@ -10,7 +17,7 @@ namespace Simple.Http
     /// </summary>
     public sealed class Configuration : IConfiguration
     {
-        private ISimpleContainer _container = new DefaultSimpleContainer();
+        private ISimpleContainer container = new DefaultSimpleContainer();
 
         /// <summary>
         ///     Gets or sets the IoC container.
@@ -20,8 +27,8 @@ namespace Simple.Http
         /// </value>
         public ISimpleContainer Container
         {
-            get { return _container; }
-            set { _container = value ?? new DefaultSimpleContainer(); }
+            get { return this.container; }
+            set { this.container = value ?? new DefaultSimpleContainer(); }
         }
 
         public IMediaTypeHandler DefaultMediaTypeHandler { get; set; }

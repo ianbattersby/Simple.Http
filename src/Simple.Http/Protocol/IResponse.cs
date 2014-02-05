@@ -1,11 +1,17 @@
-using System.Collections;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IResponse.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Abstraction for an HTTP response, to be implemented by hosting.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Protocol
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -24,8 +30,6 @@ namespace Simple.Http.Protocol
         /// <summary>
         /// Gets the output stream.
         /// </summary>
-        //Stream OutputStream { get; }
-
         Func<Stream, Task> WriteFunction { get; set; }
 
         /// <summary>

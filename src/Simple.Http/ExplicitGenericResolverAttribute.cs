@@ -1,16 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ExplicitGenericResolverAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Provides a list of Generic URI types from a regular expression.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Provides a list of Generic URI types from a regular expression.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public sealed class ExplicitGenericResolverAttribute : GenericResolverAttribute
     {
-        private readonly Type[] _types;
+        private readonly Type[] types;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegexGenericResolverAttribute" /> class.
@@ -20,7 +29,7 @@ namespace Simple.Http
         public ExplicitGenericResolverAttribute(string uriTemplateName, params Type[] types)
             : base(uriTemplateName)
         {
-            _types = types;
+            this.types = types;
         }
 
         /// <summary>
@@ -31,7 +40,7 @@ namespace Simple.Http
         /// </returns>
         public override IEnumerable<Type> GetTypes()
         {
-            return _types.AsEnumerable();
+            return this.types.AsEnumerable();
         }
     }
 }

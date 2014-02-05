@@ -1,40 +1,48 @@
-using Simple.Http.Behaviors;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PropertySetterBuilder.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the PropertySetterBuilder type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.CodeGeneration
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
 
-    sealed class PropertySetterBuilder
+    internal sealed class PropertySetterBuilder
     {
         private static readonly MethodInfo DictionaryContainsKeyMethod = typeof(IDictionary<string, string>).GetMethod("ContainsKey", new[] { typeof(string) });
         private static readonly PropertyInfo DictionaryIndexerProperty = typeof(IDictionary<string, string>).GetProperty("Item");
 
-        private readonly ParameterExpression _param;
-        private readonly Expression _obj;
-        private readonly PropertyInfo _property;
-        private MemberExpression _nameProperty;
-        private Expression _itemProperty;
-        private MethodCallExpression _containsKey;
+        private readonly ParameterExpression param;
+        private readonly Expression obj;
+        private readonly PropertyInfo property;
+        private MemberExpression nameProperty;
+        private Expression itemProperty;
+        private MethodCallExpression containsKey;
 
         public PropertySetterBuilder(ParameterExpression param, Expression obj, PropertyInfo property)
         {
-            _param = param;
-            _obj = obj;
-            _property = property;
+            this.param = param;
+            this.obj = obj;
+            this.property = property;
         }
 
         public ConditionalExpression CreatePropertySetter()
         {
-            CreatePropertyExpressions();
+            this.CreatePropertyExpressions();
 
             if (PropertyIsPrimitive())
             {
-                return Expression.IfThen(_containsKey, CreateTrySimpleAssign());
+                return Expression.IfThen(this.containsKey, this.CreateTrySimpleAssign());
             }
 
             return null;
@@ -42,7 +50,7 @@ namespace Simple.Http.CodeGeneration
 
         private bool PropertyIsPrimitive()
         {
-            return PropertyIsPrimitive(_property);
+            return PropertyIsPrimitive(this.property);
         }
 
         public static bool PropertyIsPrimitive(PropertyInfo property)
@@ -65,88 +73,88 @@ namespace Simple.Http.CodeGeneration
 
         private void CreatePropertyExpressions()
         {
-            var name = Expression.Constant(_property.Name, typeof(string));
-            _containsKey = Expression.Call(_param, DictionaryContainsKeyMethod, name);
-            _nameProperty = Expression.Property(_obj, _property);
-            _itemProperty = Expression.Property(_param, DictionaryIndexerProperty, name);
+            var name = Expression.Constant(this.property.Name, typeof(string));
+            this.containsKey = Expression.Call(this.param, DictionaryContainsKeyMethod, name);
+            this.nameProperty = Expression.Property(this.obj, this.property);
+            this.itemProperty = Expression.Property(this.param, DictionaryIndexerProperty, name);
         }
 
         private CatchBlock CreateCatchBlock()
         {
-            return Expression.Catch(typeof(Exception), Expression.Assign(_nameProperty,
-                                                                         Expression.Default(_property.PropertyType)));
+            return Expression.Catch(
+                typeof(Exception),
+                Expression.Assign(this.nameProperty, Expression.Default(this.property.PropertyType)));
         }
 
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Reviewed. Suppression is OK here.")]
         private TryExpression CreateTrySimpleAssign()
         {
             var changeTypeMethod = typeof(PropertySetterBuilder).GetMethod(
                 "SafeConvert", BindingFlags.Static | BindingFlags.NonPublic);
 
             MethodCallExpression callConvert;
-            if (_property.PropertyType.IsEnum)
+            if (this.property.PropertyType.IsEnum)
             {
                 callConvert = Expression.Call(
-                    changeTypeMethod, _itemProperty, Expression.Constant(_property.PropertyType.GetEnumUnderlyingType()));
+                    changeTypeMethod, this.itemProperty, Expression.Constant(this.property.PropertyType.GetEnumUnderlyingType()));
             }
-            else if (_property.PropertyType.IsNullable())
+            else if (this.property.PropertyType.IsNullable())
             {
                 callConvert = Expression.Call(
                     changeTypeMethod,
-                    _itemProperty,
-                    Expression.Constant(_property.PropertyType.GetGenericArguments().Single()));
+                    this.itemProperty,
+                    Expression.Constant(this.property.PropertyType.GetGenericArguments().Single()));
             }
-            else if (IsEnumerable(_property.PropertyType))
+            else if (IsEnumerable(this.property.PropertyType))
             {
                 changeTypeMethod = typeof(PropertySetterBuilder).GetMethod(
                     "SafeConvertEnumerable", BindingFlags.Static | BindingFlags.NonPublic);
                 callConvert = Expression.Call(
-                    changeTypeMethod, _itemProperty, Expression.Constant(_property.PropertyType));
+                    changeTypeMethod, this.itemProperty, Expression.Constant(this.property.PropertyType));
             }
             else
             {
                 callConvert = Expression.Call(
-                    changeTypeMethod, _itemProperty, Expression.Constant(_property.PropertyType));
+                    changeTypeMethod, this.itemProperty, Expression.Constant(this.property.PropertyType));
             }
 
-            var assign = Expression.Assign(_nameProperty, Expression.Convert(callConvert, _property.PropertyType));
-            if (_property.PropertyType.IsEnum)
+            var assign = Expression.Assign(this.nameProperty, Expression.Convert(callConvert, this.property.PropertyType));
+            if (this.property.PropertyType.IsEnum)
             {
                 return Expression.TryCatch(
-                    // try {
                     Expression.IfThenElse(
-                        Expression.TypeIs(_itemProperty, typeof(string)),
+                        Expression.TypeIs(this.itemProperty, typeof(string)),
                         Expression.Assign(
-                            _nameProperty,
-                            Expression.Convert(
-                                Expression.Call(
-                                    typeof(Enum).GetMethod(
-                                        "Parse", new[] { typeof(Type), typeof(string), typeof(bool) }),
-                                    Expression.Constant(_property.PropertyType),
-                                    Expression.Call(_itemProperty, typeof(object).GetMethod("ToString")),
-                                    Expression.Constant(true)),
-                                _property.PropertyType)),
-                        assign),
-                    Expression.Catch(typeof(Exception), Expression.Empty()));
+                                        this.nameProperty, 
+                                        Expression.Convert(
+                                            Expression.Call(
+                                                typeof(Enum).GetMethod("Parse", new[] { typeof(Type), typeof(string), typeof(bool) }),
+                                                Expression.Constant(this.property.PropertyType),
+                                                Expression.Call(this.itemProperty, typeof(object).GetMethod("ToString")),
+                                                Expression.Constant(true)),
+                                                this.property.PropertyType)),
+                            assign),
+                        Expression.Catch(typeof(Exception), Expression.Empty()));
             }
-            if (IsAGuid(_property.PropertyType))
+
+            if (IsAGuid(this.property.PropertyType))
             {
                 return Expression.TryCatch(
-                    // try {
                     Expression.IfThenElse(
-                        Expression.TypeIs(_itemProperty, typeof(string)),
+                        Expression.TypeIs(this.itemProperty, typeof(string)),
                         Expression.Assign(
-                            _nameProperty,
+                            this.nameProperty,
                             Expression.Convert(
                                 Expression.Call(
                                     typeof(Guid).GetMethod("Parse", new[] { typeof(string) }),
-                                    Expression.Call(_itemProperty, typeof(object).GetMethod("ToString"))),
-                                _property.PropertyType)),
+                                    Expression.Call(this.itemProperty, typeof(object).GetMethod("ToString"))),
+                                this.property.PropertyType)),
                         assign),
                     Expression.Catch(typeof(Exception), Expression.Empty()));
             }
+
             return Expression.TryCatch(
-                // try {
-                assign, CreateCatchBlock());
+                assign, this.CreateCatchBlock());
         }
 
         private static object SafeConvert(object source, Type targetType)
@@ -156,7 +164,10 @@ namespace Simple.Http.CodeGeneration
 
         private static object SafeConvertEnumerable(object source, Type targetType)
         {
-            if (source == null) return null;
+            if (source == null)
+            {
+                return null;
+            }
 
             var tmpSource = (string)source;
 
@@ -193,6 +204,7 @@ namespace Simple.Http.CodeGeneration
                 var tmp = (string)value;
                 return Enum.Parse(destinationType, tmp, true);
             }
+
             return Convert.ChangeType(value, destinationType);
         }
 
@@ -207,8 +219,11 @@ namespace Simple.Http.CodeGeneration
                    && (typeof(string) != type);
         }
 
-        public static BlockExpression MakePropertySetterBlock(Type type, ParameterExpression variables,
-                                                               ParameterExpression instance, BinaryExpression construct)
+        public static BlockExpression MakePropertySetterBlock(
+            Type type,
+            ParameterExpression variables,
+            ParameterExpression instance,
+            BinaryExpression construct)
         {
             var lines = new List<Expression> { construct };
 
@@ -225,12 +240,14 @@ namespace Simple.Http.CodeGeneration
             return block;
         }
 
-        public static BlockExpression MakePropertySetterBlock(Type type, MethodCallExpression getVariables,
-                                                               ParameterExpression instance, BinaryExpression construct)
+        public static BlockExpression MakePropertySetterBlock(
+            Type type,
+            MethodCallExpression getVariables,
+            ParameterExpression instance,
+            BinaryExpression construct)
         {
             var variables = Expression.Variable(typeof(IDictionary<string, string[]>));
-            var lines = new List<Expression> { construct };
-            lines.Add(Expression.Assign(variables, getVariables));
+            var lines = new List<Expression> { construct, Expression.Assign(variables, getVariables) };
 
             var setters = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanWrite)

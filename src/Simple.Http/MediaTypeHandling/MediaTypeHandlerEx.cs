@@ -1,11 +1,19 @@
-using System;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MediaTypeHandlerEx.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the MediaTypeHandlerEx type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.MediaTypeHandling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    static class MediaTypeHandlerEx
+    internal static class MediaTypeHandlerEx
     {
         private static readonly IDictionary<Type, HashSet<string>> Cache = new Dictionary<Type, HashSet<string>>();
         private static readonly object Sync = new object();
@@ -19,6 +27,7 @@ namespace Simple.Http.MediaTypeHandling
         public static string GetContentType(this IMediaTypeHandler mediaTypeHandler, IList<string> acceptedTypes)
         {
             HashSet<string> contentTypes;
+
             if (!Cache.TryGetValue(mediaTypeHandler.GetType(), out contentTypes))
             {
                 lock (Sync)
@@ -33,12 +42,14 @@ namespace Simple.Http.MediaTypeHandling
                     }
                 }
             }
+
             return acceptedTypes.FirstOrDefault(x => ContainsMatchingContentType(contentTypes, x));
         }
 
         private static bool ContainsMatchingContentType(IEnumerable<string> supportedMediaTypes, string mediaType)
         {
-            bool matched = false;
+            var matched = false;
+
             foreach (var supportedMediaType in supportedMediaTypes)
             {
                 if (IsWildCardMediaType(supportedMediaType))
@@ -47,7 +58,7 @@ namespace Simple.Http.MediaTypeHandling
                 }
                 else
                 {
-                    matched = (supportedMediaType == mediaType);
+                    matched = supportedMediaType == mediaType;
                 }
 
                 if (matched)
@@ -55,6 +66,7 @@ namespace Simple.Http.MediaTypeHandling
                     break;
                 }
             }
+
             return matched;
         }
 
@@ -66,7 +78,7 @@ namespace Simple.Http.MediaTypeHandling
         private static bool MatchesWildCard(string wildcard, string mediaType)
         {
             var parts = wildcard.Split('*');
-            return (mediaType.StartsWith(parts[0]) && mediaType.EndsWith(parts[1]));
+            return mediaType.StartsWith(parts[0]) && mediaType.EndsWith(parts[1]);
         }
     }
 }

@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UriFromType.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Helper class to build URIs from a Handler's type
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Helpers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
 
     /// <summary>
@@ -16,20 +23,21 @@ namespace Simple.Http.Helpers
         /// Gets the URI for a handler without template parameters.
         /// </summary>
         /// <typeparam name="THandler">The type of the handler.</typeparam>
-        /// <returns>The URI.</returns>
+        /// <returns>The URI template.</returns>
         public static Uri Get<THandler>()
         {
-            return Get(typeof (THandler));
+            return Get(typeof(THandler));
         }
 
         /// <summary>
         /// Gets the URI for a handler without template parameters.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>The URI.</returns>
+        /// <param name="type">The type of handler.</param>
+        /// <returns>The URI template.</returns>
         public static Uri Get(Type type)
         {
             var uriTemplateAttributes = UriTemplateAttribute.Get(type).ToArray();
+
             AssertAtLeastOne(uriTemplateAttributes);
             AssertSingle(uriTemplateAttributes);
 
@@ -51,9 +59,17 @@ namespace Simple.Http.Helpers
         /// <returns>A URI with the necessary values incorporated.</returns>
         public static Uri Get<THandler>(Expression<Func<THandler>> expression)
         {
-            if (expression == null) throw new ArgumentNullException("expression");
+            if (expression == null)
+            {
+                throw new ArgumentNullException("expression");
+            }
+
             var memberInitExpression = expression.Body as MemberInitExpression;
-            if (memberInitExpression == null) throw new ArgumentException("Expression must be a member initializer.");
+
+            if (memberInitExpression == null)
+            {
+                throw new ArgumentException("Expression must be a member initializer.");
+            }
 
             var values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
@@ -77,13 +93,16 @@ namespace Simple.Http.Helpers
             {
                 var template = uriTemplateAttribute.Template;
                 var variables = new HashSet<string>(UriTemplateHelper.ExtractVariableNames(template), StringComparer.OrdinalIgnoreCase);
+
                 if (variables.All(values.ContainsKey))
                 {
                     var uri = uriTemplateAttribute.Template;
+
                     foreach (var variable in variables)
                     {
                         uri = uri.Replace("{" + variable + "}", (values[variable] ?? string.Empty).ToString());
                     }
+
                     return new Uri(uri, UriKind.Relative);
                 }
             }
@@ -98,7 +117,7 @@ namespace Simple.Http.Helpers
                 throw new InvalidOperationException("No UriTemplateAttribute found on type.");
             }
         }
-        
+
         private static void AssertSingle(IList<UriTemplateAttribute> attributes)
         {
             if (attributes.Count > 1)

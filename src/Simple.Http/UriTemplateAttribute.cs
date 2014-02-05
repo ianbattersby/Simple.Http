@@ -1,17 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UriTemplateAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Indicates that a type is a handler, and specifies the URI template that it matches.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Indicates that a type is a handler, and specifies the URI template that it matches.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class UriTemplateAttribute : Attribute
     {
-        private readonly string _template;
-        private readonly bool _inheritFromBaseClass;
+        private readonly string template;
+        private readonly bool inheritFromBaseClass;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UriTemplateAttribute"/> class.
@@ -20,19 +29,19 @@ namespace Simple.Http
         /// <param name="inheritFromBaseClass">If set to <c>true</c> (the default) any URI template from a base class will be prepended to the specified template.</param>
         public UriTemplateAttribute(string template, bool inheritFromBaseClass = true)
         {
-            _template = template;
-            _inheritFromBaseClass = inheritFromBaseClass;
+            this.template = template;
+            this.inheritFromBaseClass = inheritFromBaseClass;
         }
 
         /// <summary>
         /// Gets a value indicating whether the URI template from the base class is inherited.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if start of template is inherited from base class; otherwise, <c>false</c>.
+        ///   <c>true</c> if start of template is inherited from base class; otherwise, <c>false</c>.
         /// </value>
         public bool InheritFromBaseClass
         {
-            get { return _inheritFromBaseClass; }
+            get { return this.inheritFromBaseClass; }
         }
 
         /// <summary>
@@ -40,12 +49,12 @@ namespace Simple.Http
         /// </summary>
         public string Template
         {
-            get { return _template; }
+            get { return this.template; }
         }
 
         internal static IEnumerable<UriTemplateAttribute> Get(Type type)
         {
-            return GetCustomAttributes(type, typeof (UriTemplateAttribute), false)
+            return GetCustomAttributes(type, typeof(UriTemplateAttribute), false)
                 .Cast<UriTemplateAttribute>();
         }
 
@@ -57,8 +66,15 @@ namespace Simple.Http
 
         private static IEnumerable<string> RecursivelyBuildTemplates(Type type, IEnumerable<string> suffixes)
         {
-            if (type == null) throw new ArgumentNullException("type");
-            if (!FindBaseTypeWithUriTemplateAttribute(ref type)) return suffixes;
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+
+            if (!FindBaseTypeWithUriTemplateAttribute(ref type))
+            {
+                return suffixes;
+            }
 
             return from prefix in GetAllTemplates(type)
                    from suffix in suffixes
@@ -67,7 +83,7 @@ namespace Simple.Http
 
         private static bool FindBaseTypeWithUriTemplateAttribute(ref Type type)
         {
-            while (type != null && type.BaseType != typeof (object))
+            while (type != null && type.BaseType != typeof(object))
             {
                 type = type.BaseType;
                 if (Get(type).Any())
@@ -75,6 +91,7 @@ namespace Simple.Http
                     return true;
                 }
             }
+
             return false;
         }
     }

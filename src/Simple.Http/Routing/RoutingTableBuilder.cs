@@ -1,21 +1,28 @@
-﻿using System.Reflection;
-using Simple.Http.CodeGeneration;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RoutingTableBuilder.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Factory class for building routing tables.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Routing
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Behaviors;
-    using Helpers;
-    using Hosting;
+    using System.Reflection;
+
+    using Simple.Http.Helpers;
+    using Simple.Http.Hosting;
 
     /// <summary>
     /// Factory class for building routing tables.
     /// </summary>
     internal sealed class RoutingTableBuilder
     {
-        private readonly IList<Type> _handlerBaseTypes;
+        private readonly IList<Type> handlerBaseTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutingTableBuilder"/> class.
@@ -23,7 +30,7 @@ namespace Simple.Http.Routing
         /// <param name="handlerBaseTypes">The handler base types.</param>
         public RoutingTableBuilder(params Type[] handlerBaseTypes)
         {
-            _handlerBaseTypes = handlerBaseTypes;
+            this.handlerBaseTypes = handlerBaseTypes;
         }
 
         /// <summary>
@@ -33,21 +40,24 @@ namespace Simple.Http.Routing
         public RoutingTable BuildRoutingTable()
         {
             var routingTable = new RoutingTable();
-            PopulateRoutingTableWithHandlers(routingTable);
+
+            this.PopulateRoutingTableWithHandlers(routingTable);
+
             return routingTable;
         }
 
         private void PopulateRoutingTableWithHandlers(RoutingTable routingTable)
         {
-            PopulateRoutingTableWithHandlers(routingTable, ExportedTypeHelper.FromCurrentAppDomain(TypeIsHandler));
+            PopulateRoutingTableWithHandlers(routingTable, ExportedTypeHelper.FromCurrentAppDomain(this.TypeIsHandler));
         }
 
-        private void PopulateRoutingTableWithHandlers(RoutingTable routingTable, IEnumerable<Type> handlerTypes)
+        private static void PopulateRoutingTableWithHandlers(RoutingTable routingTable, IEnumerable<Type> handlerTypes)
         {
             foreach (var exportedType in handlerTypes)
             {
                 var respondsWithTypes = RespondsWithAttribute.Get(exportedType).SelectMany(rta => rta.ContentTypes).ToList();
                 var respondsToTypes = RespondsToAttribute.Get(exportedType).SelectMany(rta => rta.ContentTypes).ToList();
+
                 foreach (var uriTemplate in UriTemplateAttribute.GetAllTemplates(exportedType))
                 {
                     if (exportedType.IsGenericTypeDefinition)
@@ -62,44 +72,56 @@ namespace Simple.Http.Routing
             }
         }
 
-        private static void BuildRoutesForGenericHandlerType(RoutingTable routingTable, Type exportedType, string uriTemplate,
-                                                      List<string> respondsToTypes, List<string> respondsWithTypes)
+        private static void BuildRoutesForGenericHandlerType(
+            RoutingTable routingTable,
+            Type exportedType,
+            string uriTemplate,
+            List<string> respondsToTypes,
+            List<string> respondsWithTypes)
         {
             var genericArgument = exportedType.GetGenericArguments().Single();
             var genericParameterAttributes = genericArgument.GenericParameterAttributes &
                                              GenericParameterAttributes.SpecialConstraintMask;
             var constraints = genericArgument.GetGenericParameterConstraints();
-            string templatePart = "{" + genericArgument.Name + "}";
-            if (uriTemplate.Contains(templatePart))
+            var templatePart = "{" + genericArgument.Name + "}";
+
+            if (!uriTemplate.Contains(templatePart))
             {
-                var genericResolver =
-                    Attribute.GetCustomAttribute(exportedType, typeof (GenericResolverAttribute)) as
-                    GenericResolverAttribute;
-                IEnumerable<Type> candidateTypes;
-                Func<Type, IEnumerable<string>> getNames;
-                if (genericResolver != null)
+                return;
+            }
+
+            var genericResolver =
+                Attribute.GetCustomAttribute(exportedType, typeof(GenericResolverAttribute)) as
+                GenericResolverAttribute;
+
+            IEnumerable<Type> candidateTypes;
+            Func<Type, IEnumerable<string>> getNames;
+
+            if (genericResolver != null)
+            {
+                candidateTypes = genericResolver.GetTypes();
+                getNames = genericResolver.GetNames;
+            }
+            else
+            {
+                candidateTypes = ExportedTypeHelper.FromCurrentAppDomain(t => true);
+                getNames = t => new[] { t.Name };
+            }
+
+            foreach (var validType in candidateTypes)
+            {
+                if (!MatchesConstraints(genericParameterAttributes, constraints, validType))
                 {
-                    candidateTypes = genericResolver.GetTypes();
-                    getNames = genericResolver.GetNames;
+                    continue;
                 }
-                else
+
+                foreach (var templateName in getNames(validType))
                 {
-                    candidateTypes = ExportedTypeHelper.FromCurrentAppDomain(t => true);
-                    getNames = t => new[] {t.Name};
-                }
-                foreach (var validType in candidateTypes)
-                {
-                    if (!MatchesConstraints(genericParameterAttributes, constraints, validType))
-                    {
-                        continue;
-                    }
-                    foreach (var templateName in getNames(validType))
-                    {
-                        var withTemplate = uriTemplate.Replace(templatePart, templateName);
-                        routingTable.Add(withTemplate,
-                                         new HandlerTypeInfo(exportedType.MakeGenericType(validType), respondsToTypes,
-                                                             respondsWithTypes));
-                    }
+                    var withTemplate = uriTemplate.Replace(templatePart, templateName);
+
+                    routingTable.Add(
+                        withTemplate,
+                        new HandlerTypeInfo(exportedType.MakeGenericType(validType), respondsToTypes, respondsWithTypes));
                 }
             }
         }
@@ -110,39 +132,58 @@ namespace Simple.Http.Routing
             {
                 return true;
             }
-            for (int i = 0; i < constraints.Length; i++)
+
+            for (var i = 0; i < constraints.Length; i++)
             {
                 if (!constraints[i].IsAssignableFrom(target))
                 {
                     return false;
                 }
             }
+
             if (attributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
             {
-                if (target.GetConstructor(new Type[0]) == null) return false;
+                if (target.GetConstructor(new Type[0]) == null)
+                {
+                    return false;
+                }
             }
+
             if (attributes.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
             {
-                if (!(target.IsClass || target.IsInterface)) return false;
+                if (!(target.IsClass || target.IsInterface))
+                {
+                    return false;
+                }
             }
+
             if (attributes.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
             {
-                if (!(target.IsValueType && !target.IsNullable())) return false;
+                if (!(target.IsValueType && !target.IsNullable()))
+                {
+                    return false;
+                }
             }
+
             return true;
         }
 
         private bool TypeIsHandler(Type type)
         {
-            if (type.IsAbstract || type.IsInterface) return false;
+            if (type.IsAbstract || type.IsInterface)
+            {
+                return false;
+            }
 
-            return _handlerBaseTypes.Any(t => t.IsAssignableFrom(type));
+            return this.handlerBaseTypes.Any(t => t.IsAssignableFrom(type));
         }
 
         internal RoutingTable BuildRoutingTable(IEnumerable<Type> handlerTypes)
         {
             var routingTable = new RoutingTable();
+
             PopulateRoutingTableWithHandlers(routingTable, handlerTypes);
+
             return routingTable;
         }
     }

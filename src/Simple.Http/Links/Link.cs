@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Links
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Link.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents a link, to be sent as part of a resource in a RESTful API.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Links
 {
     using System;
     using System.Runtime.Serialization;
@@ -9,11 +18,11 @@
     [DataContract(Name = "link")]
     public class Link
     {
-        private readonly Type _handlerType;
-        private readonly string _href;
-        private readonly string _rel;
-        private string _type;
-        private readonly string _title;
+        private readonly Type handlerType;
+        private readonly string href;
+        private readonly string rel;
+
+        private readonly string title;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Link"/> class.
@@ -25,11 +34,11 @@
         /// <param name="title">The title: a human-readable name for the link.</param>
         public Link(Type handlerType, string href, string rel, string type, string title)
         {
-            _handlerType = handlerType;
-            _href = href;
-            _rel = rel;
-            _type = type;
-            _title = title;
+            this.handlerType = handlerType;
+            this.href = href;
+            this.rel = rel;
+            this.Type = type;
+            this.title = title;
         }
 
         /// <summary>
@@ -38,19 +47,10 @@
         [DataMember(Name = "title")]
         public string Title
         {
-            get { return _title; }
-// ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
+            get { return this.title; }
+            // ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
             private set { }
-// ReSharper restore ValueParameterNotUsed
-        }
-
-        /// <summary>
-        /// Gets the type of the handler.
-        /// </summary>
-        /// <returns>The type of the handler.</returns>
-        public Type GetHandlerType()
-        {
-            return _handlerType;
+            // ReSharper restore ValueParameterNotUsed
         }
 
         /// <summary>
@@ -59,10 +59,10 @@
         [DataMember(Name = "href")]
         public string Href
         {
-            get { return _href; }
-// ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
+            get { return this.href; }
+            // ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
             private set { }
-// ReSharper restore ValueParameterNotUsed
+            // ReSharper restore ValueParameterNotUsed
         }
 
         /// <summary>
@@ -71,20 +71,25 @@
         [DataMember(Name = "rel")]
         public string Rel
         {
-            get { return _rel; }
-// ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
+            get { return this.rel; }
+            // ReSharper disable ValueParameterNotUsed (required by DataContractSerializer)
             private set { }
-// ReSharper restore ValueParameterNotUsed
+            // ReSharper restore ValueParameterNotUsed
         }
 
         /// <summary>
         /// Gets the type: the Content-Type returned by the link.
         /// </summary>
         [DataMember(Name = "type")]
-        public string Type
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Gets the type of the handler.
+        /// </summary>
+        /// <returns>The type of the handler.</returns>
+        public Type GetHandlerType()
         {
-            get { return _type; }
-            set { _type = value; }
+            return this.handlerType;
         }
     }
 }

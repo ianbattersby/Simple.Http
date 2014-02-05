@@ -1,4 +1,13 @@
-﻿namespace Simple.Http
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Status.Success.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the Status type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http
 {
     public partial struct Status
     {

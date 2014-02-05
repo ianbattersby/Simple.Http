@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Simple.Http.JsonNet.Tests
 {
     using System.IO;
     using Links;
     using MediaTypeHandling;
-    using Newtonsoft.Json;
+
     using Newtonsoft.Json.Linq;
     using TestHelpers;
     using Xunit;
@@ -18,8 +17,8 @@ namespace Simple.Http.JsonNet.Tests
         [Fact]
         public void SerializesCyrillicText()
         {
-            const string russian = "Мыа алиё лаборамюз ед, ведят промпта элыктрам квюо ты.";
-            var content = new Content(new Uri("http://test.com/customer/42"), new ThingHandler(), new Thing { Path = russian });
+            const string Russian = "Мыа алиё лаборамюз ед, ведят промпта элыктрам квюо ты.";
+            var content = new Content(new Uri("http://test.com/customer/42"), new ThingHandler(), new Thing { Path = Russian });
             var target = new JsonMediaTypeHandler();
             string actual;
             using (var stream = new NonClosingMemoryStream(new MemoryStream()))
@@ -33,16 +32,16 @@ namespace Simple.Http.JsonNet.Tests
                 stream.ForceDispose();
             }
             
-            Assert.Contains(russian, actual);
+            Assert.Contains(Russian, actual);
         }
 
         [Fact]
         public void PicksUpOrdersLinkFromCustomer()
         {
-            const string idProperty = @"""id"":42";
-            const string ordersLink =
+            const string IdProperty = @"""id"":42";
+            const string OrdersLink =
                 @"{""title"":null,""href"":""/customer/42/orders"",""rel"":""customer.orders"",""type"":""application/vnd.list.order+json""}";
-            const string selfLink =
+            const string SelfLink =
                 @"{""title"":null,""href"":""/customer/42"",""rel"":""self"",""type"":""application/vnd.customer+json""}";
 
             var content = new Content(new Uri("http://test.com/customer/42"), new CustomerHandler(), new Customer { Id = 42 });
@@ -59,15 +58,15 @@ namespace Simple.Http.JsonNet.Tests
                 stream.ForceDispose();
             }
             Assert.NotNull(actual);
-            Assert.Contains(idProperty, actual);
-            Assert.Contains(ordersLink, actual);
-            Assert.Contains(selfLink, actual);
+            Assert.Contains(IdProperty, actual);
+            Assert.Contains(OrdersLink, actual);
+            Assert.Contains(SelfLink, actual);
         }
 
         [Fact]
         public void PicksUpContactsLinkFromCustomer()
         {
-            const string contactsLink =
+            const string ContactsLink =
                 @"{""title"":null,""href"":""/customer/42/contacts"",""rel"":""customer.contacts"",""type"":""application/json""}";
 
             var content = new Content(new Uri("http://test.com/customer/42"), new CustomerHandler(), new Customer { Id = 42 });
@@ -84,16 +83,16 @@ namespace Simple.Http.JsonNet.Tests
                 stream.ForceDispose();
             }
             Assert.NotNull(actual);
-            Assert.Contains(contactsLink, actual);
+            Assert.Contains(ContactsLink, actual);
         }
 
         [Fact]
         public void PicksUpOrdersLinkFromCustomers()
         {
-            const string idProperty = @"""id"":42";
-            const string ordersLink =
+            const string IdProperty = @"""id"":42";
+            const string OrdersLink =
                 @"{""title"":null,""href"":""/customer/42/orders"",""rel"":""customer.orders"",""type"":""application/vnd.list.order+json""}";
-            const string selfLink =
+            const string SelfLink =
                 @"{""title"":null,""href"":""/customer/42"",""rel"":""self"",""type"":""application/vnd.customer+json""}";
 
             var content = new Content(new Uri("http://test.com/customer/42"),  new CustomerHandler(), new[] { new Customer { Id = 42 } });
@@ -110,9 +109,9 @@ namespace Simple.Http.JsonNet.Tests
                 stream.ForceDispose();
             }
             Assert.NotNull(actual);
-            Assert.Contains(idProperty, actual);
-            Assert.Contains(ordersLink, actual);
-            Assert.Contains(selfLink, actual);
+            Assert.Contains(IdProperty, actual);
+            Assert.Contains(OrdersLink, actual);
+            Assert.Contains(SelfLink, actual);
         }
 
         [Fact]
@@ -154,7 +153,7 @@ namespace Simple.Http.JsonNet.Tests
         [Fact]
         public void PicksUpPathFromThing()
         {
-            const string thingLink =
+            const string ThingLink =
                 @"{""title"":null,""href"":""/things?path=%2Ffoo%2Fbar"",""rel"":""self"",""type"":""application/json""}";
 
             var content = new Content(new Uri("http://test.com/foo/bar"), new ThingHandler(), new Thing { Path = "/foo/bar" });
@@ -171,7 +170,7 @@ namespace Simple.Http.JsonNet.Tests
                 stream.ForceDispose();
             }
             Assert.NotNull(actual);
-            Assert.Contains(thingLink, actual);
+            Assert.Contains(ThingLink, actual);
         }
     }
 

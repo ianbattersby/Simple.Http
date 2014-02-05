@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Protocol
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="HeaderKeys.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Provides string constants for HTTP Header keys
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Protocol
 {
     /// <summary>
     /// Provides string constants for HTTP Header keys
@@ -9,22 +18,27 @@
         /// The <c>Access-Control-Allow-Origin</c> response header field.
         /// </summary>
         public const string AccessControlAllowOrigin = "Access-Control-Allow-Origin";
+
         /// <summary>
         /// The <c>Access-Control-Allow-Methods</c> response header field.
         /// </summary>
         public const string AccessControlAllowMethods = "Access-Control-Allow-Methods";
+
         /// <summary>
         /// The <c>Access-Control-Allow-Headers</c> response header field.
         /// </summary>
         public const string AccessControlAllowHeaders = "Access-Control-Allow-Methods";
+
         /// <summary>
         /// The <c>Access-Control-Expose-Headers</c> response header field.
         /// </summary>
         public const string AccessControlExposeHeaders = "Access-Control-Allow-Methods";
+
         /// <summary>
         /// The <c>Access-Control-Max-Age</c> response header field.
         /// </summary>
         public const string AccessControlMaxAge = "Access-Control-Allow-Methods";
+
         /// <summary>
         /// The <c>Access-Control-Allow-Credentials</c> response header field.
         /// </summary>
@@ -231,12 +245,13 @@
         /// </summary>
         public const string SetCookie = "Set-Cookie";
 
-// ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming
+
         /// <summary>
         /// The <c>TE</c> request-header field.
         /// </summary>
         public const string TE = "TE";
-// ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
 
         /// <summary>
         /// The <c>Trailer</c> general-header field.

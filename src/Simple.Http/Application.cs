@@ -1,4 +1,13 @@
-﻿namespace Simple.Http
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Application.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   The running application.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http
 {
     using System;
     using System.Collections.Concurrent;
@@ -6,7 +15,6 @@
     using System.ComponentModel.Composition;
     using System.IO;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using CodeGeneration;
@@ -27,7 +35,7 @@
     public class Application
     {
         private static readonly object StartupLock = new object();
-        private static volatile StartupTaskRunner _startupTaskRunner = new StartupTaskRunner();
+        private static volatile StartupTaskRunner startupTaskRunner = new StartupTaskRunner();
 
         /// <summary>
         /// The OWIN standard application method.
@@ -49,19 +57,10 @@
             }
 
             return task
-                .ContinueWith(t => WriteResponse(t, context, env)).Unwrap();
+                .ContinueWith(t => WriteResponse(context, env)).Unwrap();
         }
 
-        private static Func<Stream, Task> ErrorHandler(string message)
-        {
-            return stream =>
-            {
-                var bytes = Encoding.UTF8.GetBytes(message);
-                return stream.WriteAsync(bytes, 0, bytes.Length);
-            };
-        }
-
-        private static Task WriteResponse(Task task, OwinContext context, IDictionary<string, object> env)
+        private static Task WriteResponse(OwinContext context, IDictionary<string, object> env)
         {
             var tcs = new TaskCompletionSource<int>();
 
@@ -70,11 +69,6 @@
             if (cancellationToken.IsCancellationRequested)
             {
                 tcs.SetCanceled();
-            }
-            else if (task.IsFaulted || task.Exception != null)
-            {
-                context.Response.Status = Status.InternalServerError;
-                context.Response.WriteFunction = ErrorHandler(task.Exception == null ? "An unknown error occured." : task.Exception.ToString());
             }
             else
             {
@@ -123,8 +117,19 @@
             Startup();
 
             IDictionary<string, string> variables;
-            var handlerType = TableFor(context.Request.HttpMethod).Get(context.Request.Url.AbsolutePath, out variables, context.Request.GetContentType(), context.Request.GetAccept());
-            if (handlerType == null) return null;
+            
+            var handlerType = TableFor(context.Request.HttpMethod)
+                .Get(
+                    context.Request.Url.AbsolutePath,
+                    out variables,
+                    context.Request.GetContentType(),
+                    context.Request.GetAccept());
+
+            if (handlerType == null)
+            {
+                return null;
+            }
+
             var handlerInfo = new HandlerInfo(handlerType, variables, context.Request.HttpMethod);
 
             foreach (var key in context.Request.QueryString.Keys.Where(k => !string.IsNullOrWhiteSpace(k)))
@@ -133,7 +138,8 @@
             }
 
             var task = PipelineFunctionFactory.Get(handlerInfo.HandlerType, handlerInfo.HttpMethod)(context, handlerInfo);
-            return task ?? MakeCompletedTask();
+
+            return task ?? TaskHelper.Completed();
         }
 
         private static string CombineQueryStringValues(string[] values)
@@ -141,55 +147,16 @@
             return values.Length == 1 ? values[0] : string.Join("\t", values);
         }
 
-        private static Task MakeCompletedTask()
-        {
-            var tcs = new TaskCompletionSource<object>();
-            tcs.SetResult(null);
-            return tcs.Task;
-        }
-
-        internal static string GetContentType(string file, IEnumerable<string> acceptTypes)
-        {
-            if (acceptTypes == null) return "text/plain";
-
-            var types = acceptTypes.ToArray();
-
-            if (types.All(r => r == "*/*")) return GuessType(file);
-            return types.FirstOrDefault() ?? "text/plain";
-        }
-
-        static string GuessType(string file)
-        {
-            switch (file.ToLower().SubstringAfterLast('.'))
-            {
-                case "js":
-                case "javascript": return "text/javascript";
-
-                case "css": return "text/css";
-
-                case "jpg":
-                case "jpeg": return "image/jpeg";
-                case "png": return "image/png";
-                case "gif": return "image/gif";
-
-                case "html":
-                case "htm":
-                case "xhtml": return "text/html";
-
-                default: return "text/plain";
-            }
-        }
-
         private static void Startup()
         {
-            if (_startupTaskRunner != null)
+            if (startupTaskRunner != null)
             {
                 lock (StartupLock)
                 {
-                    if (_startupTaskRunner != null)
+                    if (startupTaskRunner != null)
                     {
-                        _startupTaskRunner.RunStartupTasks();
-                        _startupTaskRunner = null;
+                        startupTaskRunner.RunStartupTasks();
+                        startupTaskRunner = null;
                     }
                 }
             }

@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IPostedFile.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Represents a file uploaded over HTTP.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
     using System.IO;

@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="TaskHelper.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Helper methods for creating completed or faulted Tasks.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Helpers
 {
     using System;
@@ -20,7 +29,7 @@ namespace Simple.Http.Helpers
             tcs.SetResult(value);
             return tcs.Task;
         }
-        
+
         /// <summary>
         /// Creates a completed <see cref="Task"/> with the specified <c>Result</c> value.
         /// </summary>

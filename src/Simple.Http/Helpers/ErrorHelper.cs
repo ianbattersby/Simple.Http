@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Helpers
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ErrorHelper.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Used for writing error messages to a response.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Helpers
 {
     using System;
     using System.Diagnostics;
@@ -10,7 +19,7 @@
     /// </summary>
     public class ErrorHelper
     {
-        private readonly IContext _context;
+        private readonly IContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorHelper"/> class.
@@ -18,7 +27,7 @@
         /// <param name="context">The context.</param>
         public ErrorHelper(IContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -28,17 +37,20 @@
         public void WriteError(Exception exception)
         {
             Trace.TraceError(exception.Message);
+
             var httpException = exception as HttpException;
-            if (httpException != null)
+
+            if (httpException == null)
             {
-                _context.Response.Status = string.Format("{0} {1}", httpException.ErrorCode, httpException.Message);
+                this.context.Response.Status = "500 Internal server error.";
             }
             else
             {
-                _context.Response.Status = "500 Internal server error.";
+                this.context.Response.Status = string.Format("{0} {1}", httpException.ErrorCode, httpException.Message);
             }
-            _context.Response.SetContentType("text/html");
-            _context.Response.Write(exception.ToString());
+
+            this.context.Response.SetContentType("text/html");
+            this.context.Response.Write(exception.ToString());
         }
     }
 }

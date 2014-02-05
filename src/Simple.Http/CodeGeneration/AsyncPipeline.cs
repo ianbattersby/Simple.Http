@@ -1,7 +1,15 @@
-﻿namespace Simple.Http.CodeGeneration
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AsyncPipeline.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the AsyncPipeline type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.CodeGeneration
 {
     using System;
-    using System.Globalization;
     using System.Reflection;
     using System.Threading.Tasks;
     using Helpers;
@@ -10,9 +18,10 @@
 
     internal class AsyncPipeline
     {
-        public static readonly MethodInfo DefaultStartMethod = typeof (AsyncPipeline).GetMethod("DefaultStart",
-                                                                                                BindingFlags.Static |
-                                                                                                BindingFlags.NonPublic);
+        public static readonly MethodInfo DefaultStartMethod = typeof(AsyncPipeline).GetMethod(
+            "DefaultStart",
+            BindingFlags.NonPublic);
+
         public static MethodInfo StartMethod(Type handlerType)
         {
             return GetMethod("Start", handlerType);
@@ -40,7 +49,7 @@
 
         private static MethodInfo GetMethod(string name, Type handlerType)
         {
-            return typeof (AsyncPipeline).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(handlerType);
+            return typeof(AsyncPipeline).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(handlerType);
         }
 
         private static Task<bool> DefaultStart()
@@ -57,60 +66,53 @@
 
         private static Task<bool> ContinueWithAsyncBlock<THandler>(Task<bool> task, Func<THandler, IContext, Task<bool>> continuation, IContext context, THandler handler)
         {
-            return task.ContinueWith(t =>
+            return task.ContinueWith(
+                t =>
                 {
                     if (t.Result)
                     {
                         return continuation(handler, context);
                     }
+
                     return TaskHelper.Completed(false);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
+                },
+                TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
         }
 
         private static Task<bool> ContinueWithHandler<THandler>(Task<bool> task, Func<THandler, IContext, Status> continuation, IContext context, THandler handler)
         {
-            return task.ContinueWith(t =>
+            return task.ContinueWith(
+                t =>
                 {
                     if (t.Result)
                     {
                         context.Response.Status = continuation(handler, context);
                         return true;
                     }
+
                     return false;
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                },
+                TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
-        private static Task<bool> ContinueWithAction<THandler>(Task<bool> task, Action<THandler, IContext> continuation, IContext context,
+        private static Task<bool> ContinueWithAction<THandler>(
+            Task<bool> task,
+            Action<THandler, IContext> continuation,
+            IContext context,
             THandler handler)
         {
-            return task.ContinueWith(t =>
+            return task.ContinueWith(
+                t =>
                 {
                     if (t.Result)
                     {
                         continuation(handler, context);
                         return true;
                     }
-                    return false;
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-        }
 
-        private static Task<bool> ContinueWithAsyncHandler<THandler>(Task<bool> task, Func<THandler, IContext, Task<Status>> continuation, IContext context, THandler handler)
-        {
-            return task.ContinueWith(t =>
-                {
-                    if (t.Result)
-                    {
-                        return continuation(handler, context)
-                            .ContinueWith(ht =>
-                                              {
-                                                  context.Response.Status = ht.Result;
-                                                  return true;
-                                              });
-                    }
-                    return TaskHelper.Completed(false);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
+                    return false;
+                },
+                TaskContinuationOptions.OnlyOnRanToCompletion);
         }
-        
-       
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Simple.Http.Tests
 {
     using System.Linq;
-    using Helpers;
+
     using Links;
     using Xunit;
 

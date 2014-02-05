@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Helpers
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AsyncExtensions.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Extension methods for Async operations
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Helpers
 {
     using System.IO;
     using System.Threading.Tasks;

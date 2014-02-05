@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -65,17 +64,17 @@ namespace Simple.Http.StructureMap.Tests
 
     public class TestHandler : IGet, IDisposable
     {
-        private readonly IResult _result;
+        private readonly IResult result;
         public bool IsDisposed { get; set; }
 
         public TestHandler(IResult result)
         {
-            _result = result;
+            this.result = result;
         }
 
         public Status Get()
         {
-            return _result.Result;
+            return this.result.Result;
         }
 
         public string TestProperty { get; set; }

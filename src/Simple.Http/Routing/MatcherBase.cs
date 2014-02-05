@@ -1,98 +1,143 @@
-﻿using System;
-using System.Collections.Generic;
-using Simple.Http.Hosting;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MatcherBase.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the MatcherBase type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Routing
 {
-    abstract class MatcherBase : IMatcher
+    using System;
+    using System.Collections.Generic;
+
+    using Simple.Http.Hosting;
+
+    internal abstract class MatcherBase : IMatcher
     {
-        private readonly int _priority;
-        private readonly string _pattern;
-        private readonly MatcherCollection _matchers = new MatcherCollection();
-        private readonly Dictionary<string, IMatcher> _statics = new Dictionary<string, IMatcher>(StringComparer.OrdinalIgnoreCase);
-        private List<HandlerTypeInfo> _typeInfos;
-        private int _totalPriority;
+        private readonly int priority;
+
+        private readonly MatcherCollection matchers = new MatcherCollection();
+        private readonly Dictionary<string, IMatcher> statics = new Dictionary<string, IMatcher>(StringComparer.OrdinalIgnoreCase);
+        private List<HandlerTypeInfo> typeInfos;
+        private int totalPriority;
 
         protected MatcherBase(string pattern, int priority)
         {
-            _pattern = pattern;
-            _priority = priority;
+            this.Pattern = pattern;
+            this.priority = priority;
+        }
+
+        public IList<HandlerTypeInfo> Items
+        {
+            get
+            {
+                return this.typeInfos;
+            }
+        }
+
+        public string Pattern { get; private set; }
+
+        public MatcherCollection Matchers
+        {
+            get
+            {
+                return this.matchers;
+            }
+        }
+
+        internal IEnumerable<IMatcher> StaticMatchers
+        {
+            get
+            {
+                return this.statics.Values;
+            }
         }
 
         public void AddTypeInfo(HandlerTypeInfo typeInfo)
         {
-            if (_typeInfos == null)
+            if (this.typeInfos == null)
             {
-                _typeInfos = new List<HandlerTypeInfo>();
+                this.typeInfos = new List<HandlerTypeInfo>();
             }
-            _typeInfos.Add(typeInfo.SetPriority(_totalPriority));
+
+            this.typeInfos.Add(typeInfo.SetPriority(this.totalPriority));
         }
-
-        public IList<HandlerTypeInfo> Items { get { return _typeInfos; } }
-
-        public string Pattern { get { return _pattern; } }
-
-        public MatcherCollection Matchers { get { return _matchers; } }
 
         public bool Match(string part, string value, int index, MatchData matchData)
         {
-            if (!OnMatch(part, matchData))
+            if (!this.OnMatch(part, matchData))
             {
                 return false;
             }
+
             if (index == -1)
             {
-                if (_typeInfos == null) return false;
-                matchData.Add(_typeInfos);
+                if (this.typeInfos == null)
+                {
+                    return false;
+                }
+
+                matchData.Add(this.typeInfos);
+
                 return true;
             }
-            int nextIndex = value.IndexOf('/', ++index);
+
+            var nextIndex = value.IndexOf('/', ++index);
             part = nextIndex == -1 ? value.Substring(index) : value.Substring(index, nextIndex - index);
+
             IMatcher matcher;
-            if (_statics.TryGetValue(part, out matcher))
+
+            if (this.statics.TryGetValue(part, out matcher))
             {
                 return matcher.Match(part, value, nextIndex, matchData);
             }
-            bool found = false;
-            foreach (var t in _matchers)
+
+            var found = false;
+
+            foreach (var t in this.matchers)
             {
                 found = t.Match(part, value, nextIndex, matchData) || found;
             }
+
             return found;
         }
 
         protected abstract bool OnMatch(string part, MatchData matchData);
 
-        public IMatcher Add(string[] parts, int index, int priority)
+        public IMatcher Add(string[] parts, int index, int thisPriority)
         {
-            _totalPriority = priority + _priority;
-            if (index >= parts.Length) return this;
-            IMatcher matcher;
-            if (!_statics.TryGetValue(parts[index], out matcher))
+            this.totalPriority = thisPriority + this.priority;
+
+            if (index >= parts.Length)
             {
-                if (_matchers.Contains(parts[index]))
+                return this;
+            }
+
+            IMatcher matcher;
+
+            if (!this.statics.TryGetValue(parts[index], out matcher))
+            {
+                if (this.matchers.Contains(parts[index]))
                 {
-                    matcher = _matchers[parts[index]];
+                    matcher = this.matchers[parts[index]];
                 }
                 else
                 {
                     matcher = MatcherFactory.Create(parts[index]);
                     if (matcher is StaticMatcher)
                     {
-                        _statics.Add(parts[index], matcher);
+                        this.statics.Add(parts[index], matcher);
                     }
                     else
                     {
-                        _matchers.Add(matcher);
+                        this.matchers.Add(matcher);
                     }
                 }
             }
-            return matcher.Add(parts, index + 1, _totalPriority);
-        }
 
-        internal IEnumerable<IMatcher> StaticMatchers
-        {
-            get { return _statics.Values; }
+            return matcher.Add(parts, index + 1, this.totalPriority);
         }
     }
 }

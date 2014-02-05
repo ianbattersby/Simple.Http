@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ResponseExtensions.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Extension methods for the <see cref="IResponse" /> interface.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.Protocol
 {
     using System;
@@ -10,8 +19,6 @@ namespace Simple.Http.Protocol
     /// </summary>
     public static class ResponseExtensions
     {
-        private const int MinusOneYear = -31557600;
-        private static readonly string[] MediaTypeWildcard = new[] {"*/*"};
         private static readonly Regex CharsetCheck = new Regex(@";\s*charset=");
 
         /// <summary>
@@ -27,6 +34,7 @@ namespace Simple.Http.Protocol
         public static void EnsureContentTypeCharset(this IResponse response, string charset = "utf-8")
         {
             string value;
+
             if (response.TryGetHeader(HeaderKeys.ContentType, out value))
             {
                 if (!CharsetCheck.IsMatch(value))
@@ -65,7 +73,7 @@ namespace Simple.Http.Protocol
         public static void SetHeader(this IResponse response, string header, string value)
         {
             EnsureHeaders(response);
-            response.Headers[header] = new[] {value};
+            response.Headers[header] = new[] { value };
         }
 
         /// <summary>
@@ -85,6 +93,7 @@ namespace Simple.Http.Protocol
             }
 
             string[] values;
+
             if ((!response.Headers.TryGetValue(header, out values)) || values.Length == 0)
             {
                 value = null;
@@ -96,7 +105,7 @@ namespace Simple.Http.Protocol
                 value = values[0];
                 return true;
             }
-            
+
             throw new InvalidOperationException("Header has more than one value.");
         }
 
@@ -109,7 +118,9 @@ namespace Simple.Http.Protocol
         public static void AddHeader(this IResponse response, string header, string value)
         {
             EnsureHeaders(response);
+
             string[] currentValues;
+
             if (response.Headers.TryGetValue(header, out currentValues))
             {
                 Array.Resize(ref currentValues, currentValues.Length + 1);
@@ -117,24 +128,10 @@ namespace Simple.Http.Protocol
             }
             else
             {
-                currentValues = new[] {value};
+                currentValues = new[] { value };
             }
-            response.Headers[header] = currentValues;
-        }
 
-        /// <summary>
-        /// Sets a cookie.
-        /// </summary>
-        /// <param name="response">The <see cref="IResponse"/> instance.</param>
-        /// <param name="name">The name of the cookie to set.</param>
-        /// <param name="value">The value of the cookie to set.</param>
-        /// <param name="timeOut">The time (in seconds) after which the cookie expires.</param>
-        /// <param name="httpOnly">A flag indicating whether the cookie is readable only via HTTP (i.e., not by client-side script). Default is <c>true</c>.</param>
-        /// <param name="secure">A flag indicating whether the cookie should only be sent over HTTPS. Default is <c>false</c>.</param>
-        /// <param name="path">The path below which the cookie applies.</param>
-        public static void SetCookie(this IResponse response, string name, string value, int timeOut = 0, bool httpOnly = true, bool secure = false, string path = "/")
-        {
-            response.AddHeader(HeaderKeys.SetCookie, CookieWriter.Write(name, value, timeOut, httpOnly, secure, path));
+            response.Headers[header] = currentValues;
         }
 
         /// <summary>
@@ -148,24 +145,12 @@ namespace Simple.Http.Protocol
         }
 
         /// <summary>
-        /// Removes a cookie (by setting its Expiry one year in the past).
-        /// </summary>
-        /// <param name="response">The <see cref="IResponse"/> instance.</param>
-        /// <param name="name">The name of the cookie to remove.</param>
-        public static void RemoveCookie(this IResponse response, string name)
-        {
-            EnsureHeaders(response);
-            response.AddHeader(HeaderKeys.SetCookie, CookieWriter.WriteDelete(name));
-        }
-
-        /// <summary>
         /// Sets the Last-Modified header.
         /// </summary>
         /// <param name="response">The <see cref="IResponse"/> instance.</param>
         /// <param name="dateTime">The time the resource was last modified.</param>
         public static void SetLastModified(this IResponse response, DateTime dateTime)
         {
-            EnsureHeaders(response);
             response.SetHeader(HeaderKeys.LastModified, dateTime.ToUniversalTime().ToString("R"));
         }
 
@@ -175,7 +160,6 @@ namespace Simple.Http.Protocol
         /// <param name="response">The <see cref="IResponse"/> instance.</param>
         public static void DisableCache(this IResponse response)
         {
-            EnsureHeaders(response);
             response.SetHeader(HeaderKeys.CacheControl, "no-cache; no-store");
         }
 
@@ -186,13 +170,19 @@ namespace Simple.Http.Protocol
         /// <param name="cacheOptions">A <see cref="CacheOptions"/> object to specify the cache settings.</param>
         public static void SetCacheOptions(this IResponse response, CacheOptions cacheOptions)
         {
-            if (cacheOptions == null) return;
+            if (cacheOptions == null)
+            {
+                return;
+            }
+
             if (cacheOptions.Disable)
             {
                 response.DisableCache();
                 return;
             }
+
             response.SetHeader(HeaderKeys.CacheControl, cacheOptions.ToHeaderString());
+
             if (cacheOptions.AbsoluteExpiry.HasValue)
             {
                 response.SetHeader(HeaderKeys.Expires, cacheOptions.AbsoluteExpiry.Value.ToString("R"));

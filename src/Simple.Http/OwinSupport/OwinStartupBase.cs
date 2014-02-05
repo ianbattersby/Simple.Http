@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.OwinSupport
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="OwinStartupBase.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the OwinStartupBase type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.OwinSupport
 {
     using System;
 
@@ -8,29 +17,29 @@
 
     public abstract class OwinStartupBase
     {
-        private readonly Action<IAppBuilder> _builder;
+        private readonly Action<IAppBuilder> builder;
+
+        protected OwinStartupBase()
+        {
+            this.builder = builder => builder.Use(new Func<AppFunc, AppFunc>(ignoreNextApp => (AppFunc)Application.Run));
+        }
+
+        protected OwinStartupBase(Action<IAppBuilder> builder)
+        {
+            this.builder = builder;
+        }
 
         protected Action<IAppBuilder> Builder
         {
             get
             {
-                return this._builder;
+                return this.builder;
             }
-        }
-
-        protected OwinStartupBase()
-        {
-            this._builder = builder => builder.Use(new Func<AppFunc, AppFunc>(ignoreNextApp => (AppFunc)Application.Run));
-        }
-
-        protected OwinStartupBase(Action<IAppBuilder> builder)
-        {
-            this._builder = builder;
         }
 
         public void Configuration(IAppBuilder app)
         {
-            this._builder.Invoke(app);
+            this.builder.Invoke(app);
         }
     }
 }

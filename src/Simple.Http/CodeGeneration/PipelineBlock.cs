@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.CodeGeneration
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PipelineBlock.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the PipelineBlock type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.CodeGeneration
 {
     using System;
     using System.Collections.Generic;
@@ -11,44 +20,44 @@
 
     internal class PipelineBlock
     {
-        private readonly List<MethodInfo> _methods = new List<MethodInfo>();
- 
-        public void Add(MethodInfo method)
-        {
-            _methods.Add(method);
-        }
+        private readonly List<MethodInfo> methods = new List<MethodInfo>();
 
         public bool Any
         {
-            get { return _methods.Count > 0; }
+            get { return this.methods.Count > 0; }
         }
 
         public bool IsBoolean
         {
-            get { return _methods.Count > 0 && _methods.Last().ReturnType == typeof (bool); }
+            get { return this.methods.Count > 0 && this.methods.Last().ReturnType == typeof(bool); }
+        }
+
+        public void Add(MethodInfo method)
+        {
+            this.methods.Add(method);
         }
 
         public Delegate Generate(Type handlerType)
         {
-            var context = Expression.Parameter(typeof (IContext));
+            var context = Expression.Parameter(typeof(IContext));
             var handler = Expression.Parameter(handlerType);
 
             var calls = new List<Expression>();
-            calls.AddRange(_methods.Select(m => CreateCall(m, handler, context, handlerType)));
+            calls.AddRange(this.methods.Select(m => CreateCall(m, handler, context, handlerType)));
 
-            if (_methods.Last().ReturnType == typeof(void))
+            if (this.methods.Last().ReturnType == typeof(void))
             {
                 calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompletedTask", BindingFlags.Static | BindingFlags.NonPublic)));
             }
-            else if (_methods.Last().ReturnType == typeof(bool))
-            {
-                FixLastCall(calls, "CompleteBooleanTask");
-            }
-            else if (_methods.Last().ReturnType == typeof(Task))
+            else if (this.methods.Last().ReturnType == typeof(bool))
             {
                 FixLastCall(calls, "CompleteTask");
             }
-            else if (_methods.Last().ReturnType == typeof(Task<bool>))
+            else if (this.methods.Last().ReturnType == typeof(Task))
+            {
+                FixLastCall(calls, "CompleteTask");
+            }
+            else if (this.methods.Last().ReturnType == typeof(Task<bool>))
             {
                 FixLastCall(calls, "CancelBooleanAsync");
             }
@@ -65,22 +74,29 @@
 
         private static Expression CreateCall(MethodInfo method, ParameterExpression handler, ParameterExpression context, Type handlerType)
         {
-            if (method.IsGenericMethod)
+            if (!method.IsGenericMethod)
             {
-                var handlerParameterType = method.GetParameters()[0].ParameterType;
-                if (handlerParameterType.IsGenericType)
-                {
-                    var @interface =
-                        handlerType.GetInterfaces().FirstOrDefault(
-                            i =>
-                            i.IsGenericType &&
-                            i.GetGenericTypeDefinition() == handlerParameterType.GetGenericTypeDefinition());
-                    if (@interface != null)
-                    {
-                        method = method.MakeGenericMethod(@interface.GetGenericArguments().Single());
-                    }
-                }
+                return Expression.Call(method, handler, context);
             }
+
+            var handlerParameterType = method.GetParameters()[0].ParameterType;
+
+            if (!handlerParameterType.IsGenericType)
+            {
+                return Expression.Call(method, handler, context);
+            }
+
+            var @interface =
+                handlerType.GetInterfaces().FirstOrDefault(
+                    i =>
+                    i.IsGenericType &&
+                    i.GetGenericTypeDefinition() == handlerParameterType.GetGenericTypeDefinition());
+
+            if (@interface != null)
+            {
+                method = method.MakeGenericMethod(@interface.GetGenericArguments().Single());
+            }
+
             return Expression.Call(method, handler, context);
         }
 
@@ -91,14 +107,7 @@
             calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic), lastCall));
         }
 
-        private static Task<bool> CompletedTask()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            tcs.SetResult(true);
-            return tcs.Task;
-        }
-
-        private static Task<bool> CompleteBooleanTask(bool @continue)
+        private static Task<bool> CompletedTask(bool @continue = true)
         {
             var tcs = new TaskCompletionSource<bool>();
             tcs.SetResult(@continue);
@@ -113,14 +122,18 @@
         private static Task<bool> CancelBooleanAsync(Task<bool> task)
         {
             var cancellationTokenSource = new CancellationTokenSource();
-            return task.ContinueWith(t =>
+
+            return task.ContinueWith(
+                t =>
                 {
                     if (!t.Result)
                     {
                         cancellationTokenSource.Cancel();
                     }
+
                     return t.Result;
-                }, cancellationTokenSource.Token);
+                },
+                cancellationTokenSource.Token);
         }
     }
 }

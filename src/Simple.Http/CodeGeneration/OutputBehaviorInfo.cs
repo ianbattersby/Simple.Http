@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="OutputBehaviorInfo.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the OutputBehaviorInfo type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.CodeGeneration
 {
     using System;
@@ -6,29 +15,30 @@ namespace Simple.Http.CodeGeneration
     using System.Threading;
     using Behaviors;
 
-    class OutputBehaviorInfo : BehaviorInfo
+    internal class OutputBehaviorInfo : BehaviorInfo
     {
-        private static List<OutputBehaviorInfo> _cache;
+        private static List<OutputBehaviorInfo> cache;
 
-        public OutputBehaviorInfo(Type behaviorType, Type implementingType, Priority priority) : base(behaviorType, implementingType, priority)
+        public OutputBehaviorInfo(Type behaviorType, Type implementingType, Priority priority)
+            : base(behaviorType, implementingType, priority)
         {
         }
 
         public static IEnumerable<OutputBehaviorInfo> GetInPriorityOrder()
         {
-            if (_cache == null)
+            if (cache == null)
             {
                 var list = FindOutputBehaviorTypes().OrderBy(t => t.Priority).ToList();
-                Interlocked.CompareExchange(ref _cache, list, null);
+                Interlocked.CompareExchange(ref cache, list, null);
             }
 
-            return _cache;
+            return cache;
         }
 
         private static IEnumerable<OutputBehaviorInfo> FindOutputBehaviorTypes()
         {
             return
-                FindBehaviorTypes<OutputBehaviorAttribute, OutputBehaviorInfo>(
+                BehaviorInfo.FindBehaviorTypes<OutputBehaviorAttribute, OutputBehaviorInfo>(
                     (t, i, p) => new OutputBehaviorInfo(t, i, p));
         }
     }

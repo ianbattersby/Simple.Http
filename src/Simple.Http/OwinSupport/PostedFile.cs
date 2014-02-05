@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PostedFile.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Provides a Simple.Http wrapper around an HttpPostedFile from HttpContext
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.OwinSupport
 {
     using System.IO;
@@ -8,15 +17,11 @@ namespace Simple.Http.OwinSupport
     /// </summary>
     internal class PostedFile : IPostedFile
     {
-        private readonly HttpPostedFile _file;
+        private readonly HttpPostedFile file;
 
-        /// <summary>
-        /// Saves the contents of an uploaded file.
-        /// </summary>
-        /// <param name="filename">The name of the saved file. </param><exception cref="T:System.Web.HttpException">The <see cref="P:System.Web.Configuration.HttpRuntimeSection.RequireRootedSaveAsPath"/> property of the <see cref="T:System.Web.Configuration.HttpRuntimeSection"/> object is set to true, but <paramref name="filename"/> is not an absolute path.</exception>
-        public void SaveAs(string filename)
+        public PostedFile(HttpPostedFile file)
         {
-            this._file.SaveAs(filename);
+            this.file = file;
         }
 
         /// <summary>
@@ -27,7 +32,7 @@ namespace Simple.Http.OwinSupport
         /// </returns>
         public string FileName
         {
-            get { return this._file.FileName; }
+            get { return this.file.FileName; }
         }
 
         /// <summary>
@@ -38,7 +43,7 @@ namespace Simple.Http.OwinSupport
         /// </returns>
         public string ContentType
         {
-            get { return this._file.ContentType; }
+            get { return this.file.ContentType; }
         }
 
         /// <summary>
@@ -49,7 +54,7 @@ namespace Simple.Http.OwinSupport
         /// </returns>
         public int ContentLength
         {
-            get { return this._file.ContentLength; }
+            get { return this.file.ContentLength; }
         }
 
         /// <summary>
@@ -60,12 +65,16 @@ namespace Simple.Http.OwinSupport
         /// </returns>
         public Stream InputStream
         {
-            get { return this._file.InputStream; }
+            get { return this.file.InputStream; }
         }
 
-        public PostedFile(HttpPostedFile file)
+        /// <summary>
+        /// Saves the contents of an uploaded file.
+        /// </summary>
+        /// <param name="filename">The name of the saved file. </param><exception cref="T:System.Web.HttpException">The <see cref="P:System.Web.Configuration.HttpRuntimeSection.RequireRootedSaveAsPath"/> property of the <see cref="T:System.Web.Configuration.HttpRuntimeSection"/> object is set to true, but <paramref name="filename"/> is not an absolute path.</exception>
+        public void SaveAs(string filename)
         {
-            this._file = file;
+            this.file.SaveAs(filename);
         }
     }
 }

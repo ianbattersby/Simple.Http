@@ -12,8 +12,8 @@
             var target = new RoutingTable();
             var expected = typeof(RoutingTableTests);
             target.Add("/", expected);
-            IDictionary<string, string> _;
-            var actual = target.Get("/", out _);
+            IDictionary<string, string> matches;
+            var actual = target.Get("/", out matches);
             Assert.Equal(expected, actual);
         }
 
@@ -23,8 +23,8 @@
             var target = new RoutingTable();
             var expected = typeof(RoutingTableTests);
             target.Add("/test", expected);
-            IDictionary<string, string> _;
-            var actual = target.Get("/test", out _);
+            IDictionary<string, string> matches;
+            var actual = target.Get("/test", out matches);
             Assert.Equal(expected, actual);
         }
 
@@ -34,8 +34,8 @@
             var target = new RoutingTable();
             var expected = typeof(RoutingTableTests);
             target.Add("/test", expected);
-            IDictionary<string, string> _;
-            var actual = target.Get("/test/", out _);
+            IDictionary<string, string> matches;
+            var actual = target.Get("/test/", out matches);
             Assert.Equal(expected, actual);
         }
 

@@ -1,20 +1,28 @@
-using System;
-using System.Collections.Generic;
-using Simple.Http.Helpers;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GenericResolverAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Base class for attributes that resolve Generic UriTemplate parameters.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Base class for attributes that resolve Generic UriTemplate parameters.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public abstract class GenericResolverAttribute : Attribute
     {
-        private readonly string _uriTemplateName;
+        private readonly string uriTemplateName;
 
         protected GenericResolverAttribute(string uriTemplateName)
         {
-            _uriTemplateName = uriTemplateName;
+            this.uriTemplateName = uriTemplateName;
         }
 
         /// <summary>
@@ -22,7 +30,7 @@ namespace Simple.Http
         /// </summary>
         public string UriTemplateName
         {
-            get { return _uriTemplateName; }
+            get { return this.uriTemplateName; }
         }
 
         /// <summary>

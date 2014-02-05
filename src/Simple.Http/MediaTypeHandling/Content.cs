@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Content.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Default implementation of the <see cref="IContent" /> interface.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http.MediaTypeHandling
 {
     using System;
@@ -10,15 +19,15 @@ namespace Simple.Http.MediaTypeHandling
     /// </summary>
     public class Content : IContent
     {
-        private readonly Uri _uri;
-        private readonly object _handler;
-        private readonly object _model;
+        private readonly Uri uri;
+        private readonly object handler;
+        private readonly object model;
 
         public Content(Uri uri, object handler, object model)
         {
-            _uri = uri;
-            _handler = handler;
-            _model = model;
+            this.uri = uri;
+            this.handler = handler;
+            this.model = model;
         }
 
         /// <summary>
@@ -26,7 +35,7 @@ namespace Simple.Http.MediaTypeHandling
         /// </summary>
         public object Handler
         {
-            get { return _handler; }
+            get { return this.handler; }
         }
 
         /// <summary>
@@ -34,7 +43,7 @@ namespace Simple.Http.MediaTypeHandling
         /// </summary>
         public object Model
         {
-            get { return _model; }
+            get { return this.model; }
         }
 
         /// <summary>
@@ -45,22 +54,28 @@ namespace Simple.Http.MediaTypeHandling
             get
             {
                 return
-                    _handler.GetType().GetProperties().Where(p => p.CanRead).Select(
-                        p => new KeyValuePair<string, object>(p.Name, p.GetValue(_handler, null)));
+                    this.handler.GetType().GetProperties().Where(p => p.CanRead).Select(
+                        p => new KeyValuePair<string, object>(p.Name, p.GetValue(this.handler, null)));
             }
         }
 
         /// <summary>
         /// Gets the links which are valid for the model type, based on the <see cref="LinksFromAttribute"/> on handlers.
         /// </summary>
-        public IEnumerable<Link> Links { get { return LinkHelper.GetLinksForModel(_model); } }
+        public IEnumerable<Link> Links
+        {
+            get
+            {
+                return LinkHelper.GetLinksForModel(this.model);
+            }
+        }
 
         /// <summary>
         /// Gets the URI used to retrieve the resource.
         /// </summary>
         public Uri Uri
         {
-            get { return _uri; }
+            get { return this.uri; }
         }
     }
 }

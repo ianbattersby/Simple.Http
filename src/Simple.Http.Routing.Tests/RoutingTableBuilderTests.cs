@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
+
     using Behaviors;
     using Routing;
     using Xunit;
@@ -58,10 +58,10 @@
         [Fact]
         public void FiltersHandlerByContentType()
         {
-            var builder = new RoutingTableBuilder(typeof (IGet));
+            var builder = new RoutingTableBuilder(typeof(IGet));
             var table = builder.BuildRoutingTable();
             IDictionary<string, string> variables;
-            var actual = table.Get("/spaceship", out variables, "", new[] {"image/png"});
+            var actual = table.Get("/spaceship", out variables, "", new[] { "image/png" });
             Assert.Equal(typeof(GetSpaceshipImage), actual);
         }
 
@@ -88,7 +88,7 @@
         [Fact]
         public void FindsGetWithUltimateBaseClassNoInterface()
         {
-            var builder = new RoutingTableBuilder(typeof (IGetAsync));
+            var builder = new RoutingTableBuilder(typeof(IGet));
             var table = builder.BuildRoutingTable();
             IDictionary<string, string> variables;
             var actual = table.Get("/top/bottom", out variables, "", new string[0]);
@@ -208,7 +208,7 @@
             throw new NotImplementedException();
         }
     }
-    
+
     [UriTemplate("/spaceship")]
     [RespondsWith("image/png")]
     public class GetSpaceshipImage : IGet
@@ -224,29 +224,29 @@
     {
     }
 
-    public abstract class Middle : Top, IGetAsync
+    public abstract class Middle : Top, IGet
     {
-        public abstract Task<Status> Get();
+        public abstract Status Get();
     }
 
     [UriTemplate("/bottom")]
     public class Bottom : Middle
     {
-        public override Task<Status> Get()
+        public override Status Get()
         {
             throw new NotImplementedException();
         }
     }
 
     [UriTemplate("/dualmethod")]
-    public class DualMethod : IPutAsync<Entity>, IPatchAsync<Entity>
+    public class DualMethod : IPut<Entity>, IPatch<Entity>
     {
-        public Task<Status> Put(Entity input)
+        public Status Put(Entity input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Status> Patch(Entity input)
+        public Status Patch(Entity input)
         {
             throw new NotImplementedException();
         }

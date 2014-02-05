@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SingleValueMatcher.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the SingleValueMatcher type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.Routing
 {
-    class SingleValueMatcher : MatcherBase
+    internal class SingleValueMatcher : MatcherBase
     {
-        private readonly string _trimmed;
+        private readonly string trimmed;
+
         public SingleValueMatcher(string pattern)
             : base(pattern, 1)
         {
-            _trimmed = pattern.Trim('{', '}');
+            this.trimmed = pattern.Trim('{', '}');
         }
 
         protected override bool OnMatch(string part, MatchData matchData)
         {
-            matchData.SetVariable(_trimmed, part);
+            matchData.SetVariable(this.trimmed, part);
             return true;
         }
     }

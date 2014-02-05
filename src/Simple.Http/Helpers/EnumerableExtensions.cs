@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Helpers
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="EnumerableExtensions.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the EnumerableExtensions type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Helpers
 {
     using System.Collections.Generic;
     using System.Linq;

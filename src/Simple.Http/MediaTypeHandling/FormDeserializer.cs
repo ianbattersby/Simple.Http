@@ -1,4 +1,11 @@
-using System.Web;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="FormDeserializer.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Defines the FormDeserializer type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http.MediaTypeHandling
 {
@@ -6,11 +13,12 @@ namespace Simple.Http.MediaTypeHandling
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Web;
 
     [MediaTypes("application/x-www-form-urlencoded")]
-    sealed class FormDeserializer : IMediaTypeHandler
+    internal sealed class FormDeserializer : IMediaTypeHandler
     {
-        private static readonly char[] SplitTokens = new[] {'\n', '&'};
+        private static readonly char[] SplitTokens = { '\n', '&' };
 
         /// <summary>
         /// Reads content from the specified input stream, which is assumed to be in x-www-form-urlencoded format.
@@ -23,13 +31,17 @@ namespace Simple.Http.MediaTypeHandling
         public object Read(Stream inputStream, Type inputType)
         {
             string text;
+
             using (var streamReader = new StreamReader(inputStream))
             {
                 text = streamReader.ReadToEnd();
             }
+
             var pairs = text.Split(SplitTokens, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => Tuple.Create(s.Split('=')[0], s.Split('=')[1]));
+            
             var obj = Activator.CreateInstance(inputType);
+            
             foreach (var pair in pairs)
             {
                 var property = inputType.GetProperty(pair.Item1) ?? inputType.GetProperties().FirstOrDefault(p => p.Name.Equals(pair.Item1, StringComparison.OrdinalIgnoreCase));
@@ -38,6 +50,7 @@ namespace Simple.Http.MediaTypeHandling
                     property.SetValue(obj, Convert.ChangeType(HttpUtility.UrlDecode(pair.Item2), property.PropertyType), null);
                 }
             }
+            
             return obj;
         }
 

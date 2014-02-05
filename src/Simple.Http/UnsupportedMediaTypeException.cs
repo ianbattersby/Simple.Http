@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UnsupportedMediaTypeException.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Thrown when a client offers or requests a Content-Type the system is unable to deal with.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Simple.Http
 {
     using System;
@@ -11,7 +20,7 @@ namespace Simple.Http
     [Serializable]
     public sealed class UnsupportedMediaTypeException : HttpException
     {
-        private readonly ReadOnlyCollection<string> _contentTypes;
+        private readonly ReadOnlyCollection<string> contentTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnsupportedMediaTypeException"/> class.
@@ -19,7 +28,7 @@ namespace Simple.Http
         /// <param name="contentType">The Content-Type.</param>
         public UnsupportedMediaTypeException(string contentType) : base(415, "Requested type(s) not available")
         {
-            _contentTypes = new ReadOnlyCollection<string>(new[] {contentType});
+            this.contentTypes = new ReadOnlyCollection<string>(new[] { contentType });
         }
 
         /// <summary>
@@ -28,7 +37,7 @@ namespace Simple.Http
         /// <param name="contentTypes">An entire list of possible Content-Type values with which the system is still not able to deal.</param>
         public UnsupportedMediaTypeException(IList<string> contentTypes) : base(415, "Requested type(s) not available")
         {
-            _contentTypes = new ReadOnlyCollection<string>(contentTypes);
+            this.contentTypes = new ReadOnlyCollection<string>(contentTypes);
         }
 
         /// <summary>
@@ -36,7 +45,7 @@ namespace Simple.Http
         /// </summary>
         public ReadOnlyCollection<string> ContentTypes
         {
-            get { return _contentTypes; }
+            get { return this.contentTypes; }
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace Simple.Http
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("ContentTypes", _contentTypes);
+            info.AddValue("ContentTypes", this.contentTypes);
         }
     }
 }

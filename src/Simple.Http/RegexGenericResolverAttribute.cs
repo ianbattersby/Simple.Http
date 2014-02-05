@@ -1,17 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Simple.Http.Helpers;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RegexGenericResolverAttribute.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Provides a list of Generic URI types from a regular expression.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Simple.Http
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
+
+    using Simple.Http.Helpers;
+
     /// <summary>
     /// Provides a list of Generic URI types from a regular expression.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
     public sealed class RegexGenericResolverAttribute : GenericResolverAttribute
     {
-        private readonly Regex _regex;
+        private readonly Regex regex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RegexGenericResolverAttribute" /> class.
@@ -20,7 +30,7 @@ namespace Simple.Http
         /// <param name="regex">A regular expression to check all exported types' full names.</param>
         public RegexGenericResolverAttribute(string uriTemplateName, string regex) : base(uriTemplateName)
         {
-            _regex = new Regex(regex);
+            this.regex = new Regex(regex);
         }
 
         /// <summary>
@@ -31,7 +41,7 @@ namespace Simple.Http
         /// </returns>
         public override IEnumerable<Type> GetTypes()
         {
-            return ExportedTypeHelper.FromCurrentAppDomain(t => _regex.IsMatch(t.FullName ?? string.Empty));
+            return ExportedTypeHelper.FromCurrentAppDomain(t => this.regex.IsMatch(t.FullName));
         }
     }
 }

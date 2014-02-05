@@ -1,4 +1,13 @@
-﻿namespace Simple.Http.Links
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="LinkHelper.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Helper methods for working with RESTful links.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Links
 {
     using System;
     using System.Collections.Concurrent;
@@ -13,7 +22,7 @@
     {
         private static readonly ConcurrentDictionary<Type, ILinkBuilder> LinkBuilders = new ConcurrentDictionary<Type, ILinkBuilder>();
         private static readonly object RootLinksSync = new object();
-        private static List<Link> _rootLinks = null; 
+        private static List<Link> rootLinks = null;
 
         /// <summary>
         /// Gets the links for a model.
@@ -22,7 +31,10 @@
         /// <returns>A readonly <see cref="ICollection&lt;Link&gt;"/> containing all available links for the model.</returns>
         public static ICollection<Link> GetLinksForModel(object model)
         {
-            if (model == null) throw new ArgumentNullException("model");
+            if (model == null)
+            {
+                throw new ArgumentNullException("model");
+            }
 
             return LinkBuilders.GetOrAdd(model.GetType(), CreateBuilder).LinksForModel(model);
         }
@@ -34,7 +46,10 @@
         /// <returns>A <see cref="Link"/> object representing the canonical URI for the model, if one is found.</returns>
         public static Link GetCanonicalLinkForModel(object model)
         {
-            if (model == null) throw new ArgumentNullException("model");
+            if (model == null)
+            {
+                throw new ArgumentNullException("model");
+            }
 
             return LinkBuilders.GetOrAdd(model.GetType(), CreateBuilder).CanonicalForModel(model);
         }
@@ -45,7 +60,12 @@
             foreach (var type in ExportedTypeHelper.FromCurrentAppDomain(LinkAttributeBase.Exists))
             {
                 var attributesForModel = LinkAttributeBase.Get(type, modelType);
-                if (attributesForModel.Count == 0) continue;
+
+                if (attributesForModel.Count == 0)
+                {
+                    continue;
+                }
+
                 linkList.AddRange(attributesForModel.Select(a => CreateLink(type, a)));
             }
 
@@ -81,23 +101,23 @@
 
         public static IEnumerable<Link> GetRootLinks()
         {
-            if (_rootLinks == null)
+            if (rootLinks == null)
             {
                 lock (RootLinksSync)
                 {
-                    if (_rootLinks == null)
+                    if (rootLinks == null)
                     {
                         var handlerTypes =
-                            ExportedTypeHelper.FromCurrentAppDomain(t => Attribute.IsDefined(t, typeof (RootAttribute)));
-                        _rootLinks = handlerTypes.Select(handlerType =>
+                            ExportedTypeHelper.FromCurrentAppDomain(t => Attribute.IsDefined(t, typeof(RootAttribute)));
+
+                        return handlerTypes.Select(handlerType =>
                             CreateLink(handlerType, (RootAttribute)Attribute.GetCustomAttribute(handlerType, typeof(RootAttribute))))
                             .ToList();
                     }
                 }
             }
 
-            return _rootLinks.AsEnumerable();
+            return rootLinks.AsEnumerable();
         }
     }
-
 }

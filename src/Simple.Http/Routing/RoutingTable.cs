@@ -1,10 +1,18 @@
-﻿namespace Simple.Http.Routing
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RoutingTable.cs" company="Mark Rendle and Ian Battersby.">
+//   Copyright (C) Mark Rendle and Ian Battersby 2014 - All Rights Reserved.
+// </copyright>
+// <summary>
+//   Handles routing for hosts.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Simple.Http.Routing
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
+
     using Hosting;
 
     /// <summary>
@@ -12,41 +20,46 @@
     /// </summary>
     internal class RoutingTable
     {
-        private readonly MatcherCollection _matchers = new MatcherCollection();
-        private readonly Dictionary<string, IMatcher> _statics = new Dictionary<string, IMatcher>(StringComparer.OrdinalIgnoreCase);
+        private readonly MatcherCollection matchers = new MatcherCollection();
+        private readonly Dictionary<string, IMatcher> statics = new Dictionary<string, IMatcher>(StringComparer.OrdinalIgnoreCase);
 
         public void Add(string template, Type type)
         {
-            Add(template, new HandlerTypeInfo(type));
+            this.Add(template, new HandlerTypeInfo(type));
         }
 
         public void Add(string template, HandlerTypeInfo type)
         {
-            var matchers = _matchers;
-            var parts = template.Trim('/').Split(new[] {'/'});
+            var addMatchers = this.matchers;
+
+            var parts = template.Trim('/').Split(new[] { '/' });
+
             if (parts.Length == 0)
             {
                 return;
             }
+
             IMatcher matcher;
-            if (_statics.ContainsKey(parts[0]))
+
+            if (this.statics.ContainsKey(parts[0]))
             {
-                matcher = _statics[parts[0]];
+                matcher = this.statics[parts[0]];
             }
-            else if (matchers.Contains(parts[0]))
+            else if (addMatchers.Contains(parts[0]))
             {
-                matcher = matchers[parts[0]];
+                matcher = addMatchers[parts[0]];
             }
             else
             {
                 matcher = MatcherFactory.Create(parts[0]);
+
                 if (matcher is StaticMatcher)
                 {
-                    _statics.Add(parts[0], matcher);
+                    this.statics.Add(parts[0], matcher);
                 }
                 else
                 {
-                    matchers.Add(matcher);
+                    addMatchers.Add(matcher);
                 }
             }
 
@@ -62,32 +75,41 @@
         /// <summary>
         /// Gets the type of handler for the specified URL.
         /// </summary>
-        /// <param name="url">The URL.</param>
+        /// <param name="url">The URL to match upon.</param>
         /// <param name="variables">The variables.</param>
         /// <param name="contentType">Value of the Content-Type header from the Request.</param>
         /// <param name="acceptTypes">Values of the Accepts header from the Request.</param>
-        /// <returns></returns>
+        /// <returns>The matched handler type.</returns>
         public Type Get(string url, out IDictionary<string, string> variables, string contentType = null, IList<string> acceptTypes = null)
         {
             variables = null;
             url = url.Trim('/');
-            int nextIndex = url.IndexOf('/');
-            string part = nextIndex >= 0 ? url.Substring(0, nextIndex) : url;
+
+            var nextIndex = url.IndexOf('/');
+            var part = nextIndex >= 0 ? url.Substring(0, nextIndex) : url;
+
             IMatcher matcher;
+
             var matchData = new MatchData();
-            bool found = false;
-            if (_statics.TryGetValue(part, out matcher))
+            var found = false;
+
+            if (this.statics.TryGetValue(part, out matcher))
             {
                 found = matcher.Match(part, url, nextIndex, matchData);
             }
+
             if (!found)
             {
-                found = _matchers.Aggregate(false, (current, t) => t.Match(part, url, nextIndex, matchData) || current);
+                found = this.matchers.Aggregate(false, (current, t) => t.Match(part, url, nextIndex, matchData) || current);
             }
 
-            if (!found) return null;
+            if (!found)
+            {
+                return null;
+            }
 
             variables = matchData.Variables;
+
             if (matchData.Single != null)
             {
                 return matchData.Single.HandlerType;
@@ -99,8 +121,10 @@
         public HashSet<Type> GetAllTypes()
         {
             var set = new HashSet<Type>();
-            AddSub(set, _statics.Values);
-            AddSub(set, _matchers);
+
+            this.AddSub(set, this.statics.Values);
+            this.AddSub(set, this.matchers);
+
             return set;
         }
 
@@ -115,11 +139,14 @@
                         set.Add(typeInfo.HandlerType);
                     }
                 }
-                AddSub(set, matcher.Matchers);
+
+                this.AddSub(set, matcher.Matchers);
+
                 var matcherBase = matcher as MatcherBase;
+
                 if (matcherBase != null)
                 {
-                    AddSub(set, matcherBase.StaticMatchers);
+                    this.AddSub(set, matcherBase.StaticMatchers);
                 }
             }
         }
