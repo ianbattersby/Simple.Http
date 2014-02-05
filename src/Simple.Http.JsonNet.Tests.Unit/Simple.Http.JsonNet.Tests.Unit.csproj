@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2C65A993-1EB6-4971-A1EE-B0FCF31AF525}</ProjectGuid>
+    <ProjectGuid>{10C175C4-B495-4A2F-96C1-4B4B0F9181BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Simple.Http.TestHelpers</RootNamespace>
-    <AssemblyName>Simple.Http.TestHelpers</AssemblyName>
+    <RootNamespace>Simple.Http.JsonNet.Tests.Unit</RootNamespace>
+    <AssemblyName>Simple.Http.JsonNet.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -33,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,23 +47,46 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.runner.msbuild">
+      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.runner.msbuild.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.tdnet">
+      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.runner.tdnet.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.runner.utility">
+      <HintPath>..\packages\xunit.1.9.1\lib\net20\xunit.runner.utility.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlComparison.cs" />
-    <Compile Include="NonClosingMemoryStream.cs" />
+    <Compile Include="JsonNetContentTypeHandlerTests.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="XAttributeExtensions.cs" />
-    <Compile Include="XElementExtensions.cs" />
-    <Compile Include="XNameExtensions.cs" />
+    <Compile Include="HalReadTests.cs" />
+    <Compile Include="HalWriteTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Simple.Http.JsonNet\Simple.Http.JsonNet.csproj">
+      <Project>{6DCE0964-3BF0-4185-AC6E-1F8B97908601}</Project>
+      <Name>Simple.Http.JsonNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Simple.Http\Simple.Http.csproj">
+      <Project>{903C289D-4CAE-4259-80DA-79D74CE06DCE}</Project>
+      <Name>Simple.Http</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Simple.Http.TestHelpers\Simple.Http.TestHelpers.csproj">
+      <Project>{2C65A993-1EB6-4971-A1EE-B0FCF31AF525}</Project>
+      <Name>Simple.Http.TestHelpers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Condition="$(MSBuildProgramFiles32) == ''" Project="$(SolutionDir).nuget\nuget.targets" />
+  <Import Condition="$(MSBuildProgramFiles32) != ''" Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

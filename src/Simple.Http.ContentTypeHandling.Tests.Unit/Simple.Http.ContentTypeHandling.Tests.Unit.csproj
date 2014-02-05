@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2C65A993-1EB6-4971-A1EE-B0FCF31AF525}</ProjectGuid>
+    <ProjectGuid>{730BBC21-8495-4825-988B-FCF4D2AE5742}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Simple.Http.TestHelpers</RootNamespace>
-    <AssemblyName>Simple.Http.TestHelpers</AssemblyName>
+    <RootNamespace>Simple.Http.ContentTypeHandling.Tests.Unit</RootNamespace>
+    <AssemblyName>Simple.Http.ContentTypeHandling.Tests.Unit</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -46,21 +46,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlComparison.cs" />
-    <Compile Include="NonClosingMemoryStream.cs" />
+    <Compile Include="ContentTypeHandlerTableTest.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="XAttributeExtensions.cs" />
-    <Compile Include="XElementExtensions.cs" />
-    <Compile Include="XNameExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Simple.Http\Simple.Http.csproj">
+      <Project>{903C289D-4CAE-4259-80DA-79D74CE06DCE}</Project>
+      <Name>Simple.Http</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop" />
+    <None Include="Settings.StyleCop">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Condition="$(MSBuildProgramFiles32) == ''" Project="$(SolutionDir).nuget\nuget.targets" />
+  <Import Condition="$(MSBuildProgramFiles32) != ''" Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
