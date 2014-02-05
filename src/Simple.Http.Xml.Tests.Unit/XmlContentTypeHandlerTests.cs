@@ -31,7 +31,7 @@
             }
             Assert.NotNull(actual);
 
-	        const string Expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
+	        const string Expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
 	                                "       xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
 	                                "  <CustomerId>42</CustomerId>"+
 	                                "  <Id>54</Id>"+
@@ -59,7 +59,7 @@
             Assert.NotNull(actual);
 
 	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
-	                                "<Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
+	                                "<Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
 	                                "          xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
 	                                "  <Id>42</Id>" +
 	                                "  <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
@@ -89,7 +89,7 @@
 
 	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
 	                                "<Customers>" +
-	                                "  <Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests'" +
+	                                "  <Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
 	                                "            xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
 	                                "    <Id>42</Id>" +
 	                                "    <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
