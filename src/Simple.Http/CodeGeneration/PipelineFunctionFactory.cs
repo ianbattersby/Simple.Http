@@ -178,7 +178,7 @@ namespace Simple.Http.CodeGeneration
             {
                 if (block is HandlerBlock)
                 {
-                    return this.BuildCallHandlerExpression(block, call);
+                    call = this.BuildCallHandlerExpression(block, call);
                 }
                 else
                 {
@@ -186,7 +186,7 @@ namespace Simple.Http.CodeGeneration
 
                     if ((pipelineBlock = block as PipelineBlock) != null)
                     {
-                        return Expression.Call(
+                        call = Expression.Call(
                             AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
                             call,
                             Expression.Constant(pipelineBlock.Generate(this.handlerType)),
@@ -195,7 +195,7 @@ namespace Simple.Http.CodeGeneration
                     }
                     else
                     {
-                        return Expression.Call(
+                        call = Expression.Call(
                             AsyncPipeline.ContinueWithActionMethod(this.handlerType),
                             call,
                             Expression.Constant(block),
@@ -231,7 +231,8 @@ namespace Simple.Http.CodeGeneration
 
         private IEnumerable<BehaviorInfo> GetSetupBehaviorInfos()
         {
-            return RequestBehaviorInfo.GetInPriorityOrder().Where(this.HandlerHasBehavior);
+            // ReSharper disable once ConvertClosureToMethodGroup
+            return RequestBehaviorInfo.GetInPriorityOrder().Where(x => this.HandlerHasBehavior(x)).ToArray();
         }
 
         private IEnumerable<BehaviorInfo> GetResponseBehaviorInfos(params ResponseBehaviorInfo[] defaults)

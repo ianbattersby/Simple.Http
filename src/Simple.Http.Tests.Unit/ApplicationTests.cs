@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Simple.Http.Tests.Unit
 {
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Simple.Http.Behaviors;
@@ -22,6 +23,7 @@ namespace Simple.Http.Tests.Unit
                                                     {
                                                         { "host.AppName", "TestApp" },
                                                         { "server.RemoteIpAddress", "1.2.3.4" },
+                                                        { "owin.CallCancelled", new CancellationToken() },
                                                         { "owin.RequestProtocol", "HTTP" },
                                                         { "owin.RequestMethod", "GET" },
                                                         { "owin.RequestBody", (Stream)stream },
@@ -85,9 +87,30 @@ namespace Simple.Http.Tests.Unit
                     Assert.False(t.IsFaulted);
                     Assert.False(t.IsCanceled);
                     Assert.Null(t.Exception);
-                    Assert.Equal(404, context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            Assert.Equal(404, context["owin.ResponseStatusCode"]);
+        }
+
+        [Fact]
+        public void LongRunningWaitsForComletion()
+        {
+            this.context["owin.RequestPath"] = "/some/long/running";
+
+            var task = Application.Run(context);
+
+            task.ContinueWith(
+                t =>
+                {
+                    Assert.IsAssignableFrom<Task>(t);
+                    Assert.False(t.IsFaulted);
+                    Assert.False(t.IsCanceled);
+                    Assert.Null(t.Exception);
+                },
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            Assert.Equal(200, context["owin.ResponseStatusCode"]);
         }
     }
 
@@ -132,6 +155,16 @@ namespace Simple.Http.Tests.Unit
         public Status Get()
         {
             return Status.NotFound;
+        }
+    }
+
+    [UriTemplate("/some/long/running")]
+    public class SomeLongRunningBehaviorEndpoint : IGet, ITestBehavior
+    {
+        public Status Get()
+        {
+            Thread.Sleep(3000);
+            return Status.OK;
         }
     }
 }

@@ -58,19 +58,9 @@ namespace Simple.Http
 
             return task
                 .ContinueWith(
-                    t =>
-                        {
-                            var token = (CancellationToken)env[OwinKeys.CallCancelled];
-
-                            if (!token.IsCancellationRequested)
-                            {
-                                throw new Exception("Unexpected request cancellation.");
-                            }
-                        },
-                    TaskContinuationOptions.OnlyOnCanceled)
-                .ContinueWith(
-                    t => WriteResponse(context, env),
-                    TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnFaulted)
+                    t => 
+                        WriteResponse(context, env), 
+                        TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnFaulted)
                 .Unwrap();
         }
 

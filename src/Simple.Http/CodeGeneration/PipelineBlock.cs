@@ -14,7 +14,6 @@ namespace Simple.Http.CodeGeneration
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Threading;
     using System.Threading.Tasks;
     using Simple.Http.Protocol;
 
@@ -47,7 +46,7 @@ namespace Simple.Http.CodeGeneration
 
             if (this.methods.Last().ReturnType == typeof(void))
             {
-                calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompleteBooleanTask", BindingFlags.Static | BindingFlags.NonPublic)));
+                calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompletedTask", BindingFlags.Static | BindingFlags.NonPublic)));
             }
             else if (this.methods.Last().ReturnType == typeof(bool))
             {
@@ -110,9 +109,11 @@ namespace Simple.Http.CodeGeneration
             return tcs.Task;
         }
 
-        private static Task<bool> CompleteAsyncTask(Task task)
+        private static Task<bool> CompletedTask()
         {
-            return task.ContinueWith(t => true, TaskContinuationOptions.OnlyOnRanToCompletion);
+            var tcs = new TaskCompletionSource<bool>();
+            tcs.SetResult(true);
+            return tcs.Task;
         }
     }
 }
