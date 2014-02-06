@@ -18,9 +18,9 @@ namespace Simple.Http.CodeGeneration
 
     internal class AsyncPipeline
     {
-        public static readonly MethodInfo DefaultStartMethod = typeof(AsyncPipeline).GetMethod("DefaultStart",
-                                                                                                BindingFlags.Static |
-                                                                                                BindingFlags.NonPublic);
+        public static readonly MethodInfo DefaultStartMethod = typeof(AsyncPipeline).GetMethod(
+            "DefaultStart",
+            BindingFlags.Static | BindingFlags.NonPublic);
 
         public static MethodInfo StartMethod(Type handlerType)
         {

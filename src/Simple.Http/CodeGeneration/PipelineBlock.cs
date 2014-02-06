@@ -47,19 +47,15 @@ namespace Simple.Http.CodeGeneration
 
             if (this.methods.Last().ReturnType == typeof(void))
             {
-                calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompletedTask", BindingFlags.Static | BindingFlags.NonPublic)));
+                calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompleteBooleanTask", BindingFlags.Static | BindingFlags.NonPublic)));
             }
             else if (this.methods.Last().ReturnType == typeof(bool))
             {
-                FixLastCall(calls, "CompleteTask");
+                FixLastCall(calls, "CompleteBooleanTask");
             }
             else if (this.methods.Last().ReturnType == typeof(Task))
             {
-                FixLastCall(calls, "CompleteTask");
-            }
-            else if (this.methods.Last().ReturnType == typeof(Task<bool>))
-            {
-                FixLastCall(calls, "CancelBooleanAsync");
+                FixLastCall(calls, "CompleteAsyncTask");
             }
             else
             {
@@ -107,33 +103,16 @@ namespace Simple.Http.CodeGeneration
             calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic), lastCall));
         }
 
-        private static Task<bool> CompletedTask(bool @continue = true)
+        private static Task<bool> CompleteBooleanTask(bool @continue = true)
         {
             var tcs = new TaskCompletionSource<bool>();
             tcs.SetResult(@continue);
             return tcs.Task;
         }
 
-        private static Task<bool> CompleteTask(Task task)
+        private static Task<bool> CompleteAsyncTask(Task task)
         {
             return task.ContinueWith(t => true, TaskContinuationOptions.OnlyOnRanToCompletion);
-        }
-
-        private static Task<bool> CancelBooleanAsync(Task<bool> task)
-        {
-            var cancellationTokenSource = new CancellationTokenSource();
-
-            return task.ContinueWith(
-                t =>
-                {
-                    if (!t.Result)
-                    {
-                        cancellationTokenSource.Cancel();
-                    }
-
-                    return t.Result;
-                },
-                cancellationTokenSource.Token);
         }
     }
 }
