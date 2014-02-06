@@ -57,7 +57,21 @@ namespace Simple.Http
             }
 
             return task
-                .ContinueWith(t => WriteResponse(context, env)).Unwrap();
+                .ContinueWith(
+                    t =>
+                        {
+                            var token = (CancellationToken)env[OwinKeys.CallCancelled];
+
+                            if (!token.IsCancellationRequested)
+                            {
+                                throw new Exception("Unexpected request cancellation.");
+                            }
+                        },
+                    TaskContinuationOptions.OnlyOnCanceled)
+                .ContinueWith(
+                    t => WriteResponse(context, env),
+                    TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnFaulted)
+                .Unwrap();
         }
 
         private static Task WriteResponse(OwinContext context, IDictionary<string, object> env)
@@ -117,7 +131,7 @@ namespace Simple.Http
             Startup();
 
             IDictionary<string, string> variables;
-            
+
             var handlerType = TableFor(context.Request.HttpMethod)
                 .Get(
                     context.Request.Url.AbsolutePath,

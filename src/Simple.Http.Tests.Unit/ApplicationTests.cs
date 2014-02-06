@@ -43,11 +43,11 @@ namespace Simple.Http.Tests.Unit
             task.ContinueWith(
                 t =>
                 {
-                    Assert.IsAssignableFrom<Task>(task);
-                    Assert.True(task.IsFaulted);
-                    Assert.False(task.IsCanceled);
-                    Assert.NotNull(task.Exception);
-                    Assert.Equal(ExceptionEndpoint.ExceptionMessage, task.Exception.Message);
+                    Assert.IsAssignableFrom<Task>(t);
+                    Assert.True(t.IsFaulted);
+                    Assert.False(t.IsCanceled);
+                    Assert.NotNull(t.Exception);
+                    Assert.Equal(ExceptionEndpoint.ExceptionMessage, t.Exception.Message);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
         }
@@ -62,11 +62,30 @@ namespace Simple.Http.Tests.Unit
             task.ContinueWith(
                 t =>
                 {
-                    Assert.IsAssignableFrom<Task>(task);
-                    Assert.True(task.IsFaulted);
-                    Assert.False(task.IsCanceled);
-                    Assert.NotNull(task.Exception);
-                    Assert.Equal(BehaviorExceptionEndpoint.ExceptionMessage, task.Exception.Message);
+                    Assert.IsAssignableFrom<Task>(t);
+                    Assert.True(t.IsFaulted);
+                    Assert.False(t.IsCanceled);
+                    Assert.NotNull(t.Exception);
+                    Assert.Equal(BehaviorExceptionEndpoint.ExceptionMessage, t.Exception.Message);
+                },
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        [Fact]
+        public void FourOFourReturnsResult()
+        {
+            this.context["owin.RequestPath"] = "/some/behavior/404";
+
+            var task = Application.Run(context);
+
+            task.ContinueWith(
+                t =>
+                {
+                    Assert.IsAssignableFrom<Task>(t);
+                    Assert.False(t.IsFaulted);
+                    Assert.False(t.IsCanceled);
+                    Assert.Null(t.Exception);
+                    Assert.Equal(404, context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
         }
@@ -105,5 +124,14 @@ namespace Simple.Http.Tests.Unit
     [RequestBehavior(typeof(TestBehavior), Priority = Priority.Highest)]
     public interface ITestBehavior
     {
+    }
+
+    [UriTemplate("/some/behavior/404")]
+    public class FourOFourWithBehaviorEndpoint : IGet, ITestBehavior
+    {
+        public Status Get()
+        {
+            return Status.NotFound;
+        }
     }
 }
