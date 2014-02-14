@@ -20,7 +20,6 @@ namespace Simple.Http
         /// Runs the startup task. This method is called by the framework.
         /// </summary>
         /// <param name="configuration">The active Simple.Http configuration.</param>
-        /// <param name="environment">The active Simple.Http environment.</param>
-        void Run(IConfiguration configuration, IWebEnvironment environment);
+        void Run(IConfiguration configuration);
     }
 }

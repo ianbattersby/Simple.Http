@@ -1,7 +1,6 @@
 ﻿namespace Simple.Http.Tests.Unit
 {
     using Simple.Http.Behaviors;
-    using Simple.Http.MediaTypeHandling;
 
     using Xunit;
 
@@ -13,10 +12,7 @@
         }
     }
 
-
-
     [UriTemplate("/")]
-    [RespondsWith(MediaType.Html)]
     public class RootHandler : IGet, IOutput<RawHtml>
     {
         public Status Get()

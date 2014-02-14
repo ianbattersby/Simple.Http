@@ -55,18 +55,15 @@ namespace Simple.Http.Routing
         {
             foreach (var exportedType in handlerTypes)
             {
-                var respondsWithTypes = RespondsWithAttribute.Get(exportedType).SelectMany(rta => rta.ContentTypes).ToList();
-                var respondsToTypes = RespondsToAttribute.Get(exportedType).SelectMany(rta => rta.ContentTypes).ToList();
-
                 foreach (var uriTemplate in UriTemplateAttribute.GetAllTemplates(exportedType))
                 {
                     if (exportedType.IsGenericTypeDefinition)
                     {
-                        BuildRoutesForGenericHandlerType(routingTable, exportedType, uriTemplate, respondsToTypes, respondsWithTypes);
+                        BuildRoutesForGenericHandlerType(routingTable, exportedType, uriTemplate);
                     }
                     else
                     {
-                        routingTable.Add(uriTemplate, new HandlerTypeInfo(exportedType, respondsToTypes, respondsWithTypes));
+                        routingTable.Add(uriTemplate, new HandlerTypeInfo(exportedType));
                     }
                 }
             }
@@ -75,9 +72,7 @@ namespace Simple.Http.Routing
         private static void BuildRoutesForGenericHandlerType(
             RoutingTable routingTable,
             Type exportedType,
-            string uriTemplate,
-            List<string> respondsToTypes,
-            List<string> respondsWithTypes)
+            string uriTemplate)
         {
             var genericArgument = exportedType.GetGenericArguments().Single();
             var genericParameterAttributes = genericArgument.GenericParameterAttributes &
@@ -121,7 +116,7 @@ namespace Simple.Http.Routing
 
                     routingTable.Add(
                         withTemplate,
-                        new HandlerTypeInfo(exportedType.MakeGenericType(validType), respondsToTypes, respondsWithTypes));
+                        new HandlerTypeInfo(exportedType.MakeGenericType(validType)));
                 }
             }
         }

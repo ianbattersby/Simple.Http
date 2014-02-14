@@ -14,7 +14,7 @@ namespace Simple.Http.Routing
         private readonly string trimmed;
 
         public SingleValueMatcher(string pattern)
-            : base(pattern, 1)
+            : base(pattern)
         {
             this.trimmed = pattern.Trim('{', '}');
         }

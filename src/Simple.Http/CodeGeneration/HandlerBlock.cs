@@ -27,7 +27,7 @@ namespace Simple.Http.CodeGeneration
             this.method = method;
         }
 
-        public Delegate Generate()
+        public Expression Generate()
         {
             var context = Expression.Parameter(typeof(IContext));
             var handler = Expression.Parameter(this.handlerType);
@@ -37,7 +37,7 @@ namespace Simple.Http.CodeGeneration
             if (parameters.Length == 0)
             {
                 Expression call = Expression.Call(handler, this.method);
-                return Expression.Lambda(call, handler, context).Compile();
+                return Expression.Lambda(call, handler, context);
             }
             else if (parameters.Length == 1)
             {
@@ -47,7 +47,7 @@ namespace Simple.Http.CodeGeneration
 
                 Expression call = Expression.Call(handler, this.method, Expression.Call(getInput, context));
 
-                return Expression.Lambda(call, handler, context).Compile();
+                return Expression.Lambda(call, handler, context);
             }
             else
             {

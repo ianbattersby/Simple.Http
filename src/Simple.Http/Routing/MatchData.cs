@@ -27,11 +27,6 @@ namespace Simple.Http.Routing
 
         public HandlerTypeInfo Single { get; private set; }
 
-        private IEnumerable<HandlerTypeInfo> PrioritiseList()
-        {
-            return this.prioritised ?? (this.prioritised = this.List.OrderBy(hti => hti.Priority).ToArray());
-        }
-
         public void Add(IList<HandlerTypeInfo> typeInfos)
         {
             if (!this.set)
@@ -78,89 +73,6 @@ namespace Simple.Http.Routing
             {
                 this.Variables.Add(key, value);
             }
-        }
-
-        public Type ResolveByMediaTypes(string contentType, IList<string> acceptTypes)
-        {
-            if (contentType == null)
-            {
-                if (acceptTypes == null)
-                {
-                    var match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsToAll && hti.RespondsWithAll);
-
-                    if (match != null)
-                    {
-                        return match.HandlerType;
-                    }
-
-                    return this.PrioritiseList().First().HandlerType;
-                }
-
-                return this.ResolveByAcceptTypes(acceptTypes);
-            }
-
-            if (acceptTypes == null)
-            {
-                return this.ResolveByContentType(contentType);
-            }
-
-            return this.ResolveByBoth(contentType, acceptTypes);
-        }
-
-        private Type ResolveByBoth(string contentType, IList<string> acceptTypes)
-        {
-            HandlerTypeInfo match;
-            foreach (var acceptType in acceptTypes)
-            {
-                match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsTo(contentType) && hti.RespondsWith(acceptType));
-
-                if (match != null)
-                {
-                    return match.HandlerType;
-                }
-            }
-
-            foreach (var acceptType in acceptTypes)
-            {
-                match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsToAll && hti.RespondsWith(acceptType));
-
-                if (match != null)
-                {
-                    return match.HandlerType;
-                }
-            }
-
-            match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsWithAll && hti.RespondsTo(contentType))
-                    ?? this.PrioritiseList().FirstOrDefault(hti => hti.RespondsToAll && hti.RespondsWithAll);
-
-            return match == null ? null : match.HandlerType;
-        }
-
-        private Type ResolveByContentType(string contentType)
-        {
-            var match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsTo(contentType))
-                        ?? this.PrioritiseList().FirstOrDefault(hti => hti.RespondsToAll);
-
-            return match == null ? null : match.HandlerType;
-        }
-
-        private Type ResolveByAcceptTypes(IEnumerable<string> acceptTypes)
-        {
-            HandlerTypeInfo match;
-
-            foreach (var acceptType in acceptTypes)
-            {
-                match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsWith(acceptType));
-
-                if (match != null)
-                {
-                    return match.HandlerType;
-                }
-            }
-
-            match = this.PrioritiseList().FirstOrDefault(hti => hti.RespondsWithAll);
-
-            return match == null ? null : match.HandlerType;
         }
     }
 }

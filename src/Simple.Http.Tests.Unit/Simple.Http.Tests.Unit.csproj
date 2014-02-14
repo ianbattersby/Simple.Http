@@ -56,7 +56,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="MediaTypeHandling\MediaTypeHandlerExTests.cs" />
-    <Compile Include="UriFromTypeTests.cs" />
     <Compile Include="UriTemplateAttributeTests.cs" />
   </ItemGroup>
   <ItemGroup>

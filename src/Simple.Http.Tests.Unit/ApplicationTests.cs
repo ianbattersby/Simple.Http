@@ -87,10 +87,9 @@ namespace Simple.Http.Tests.Unit
                     Assert.False(t.IsFaulted);
                     Assert.False(t.IsCanceled);
                     Assert.Null(t.Exception);
+                    Assert.Equal(404, context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
-
-            Assert.Equal(404, context["owin.ResponseStatusCode"]);
         }
 
         [Fact]
@@ -107,10 +106,9 @@ namespace Simple.Http.Tests.Unit
                     Assert.False(t.IsFaulted);
                     Assert.False(t.IsCanceled);
                     Assert.Null(t.Exception);
+                    Assert.Equal(200, context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
-
-            Assert.Equal(200, context["owin.ResponseStatusCode"]);
         }
     }
 

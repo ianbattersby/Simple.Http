@@ -83,15 +83,13 @@
     <Compile Include="ExplicitGenericResolverAttribute.cs" />
     <Compile Include="GenericResolverAttribute.cs" />
     <Compile Include="Helpers\AsyncExtensions.cs" />
+    <Compile Include="Helpers\DictionaryEx.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
-    <Compile Include="Helpers\IFileUtility.cs" />
-    <Compile Include="Helpers\NameValueCollectionEx.cs" />
-    <Compile Include="Helpers\StringHelpers.cs" />
+    <Compile Include="Helpers\QueryStringParser.cs" />
     <Compile Include="Helpers\TaskHelper.cs" />
     <Compile Include="Helpers\TypeExtensions.cs" />
     <Compile Include="Links\ILinkBuilder.cs" />
     <Compile Include="Links\RootAttribute.cs" />
-    <Compile Include="OwinSupport\DictionaryEx.cs" />
     <Compile Include="Protocol\CacheLevel.cs" />
     <Compile Include="Protocol\CacheOptions.cs" />
     <Compile Include="Behaviors\Implementations\SetIfModifiedSince.cs" />
@@ -106,7 +104,6 @@
     <Compile Include="Hosting\HandlerFactory.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Helpers\AssemblyExtensions.cs" />
     <Compile Include="Behaviors\Implementations\SetCacheOptions.cs" />
     <Compile Include="CodeGeneration\IMethodLookup.cs" />
     <Compile Include="CodeGeneration\MethodLookup.cs" />
@@ -118,7 +115,6 @@
     <Compile Include="CodeGeneration\WriteStatusCode.cs" />
     <Compile Include="Behaviors\Implementations\WriteStreamResponse.cs" />
     <Compile Include="CodeGeneration\WriteView.cs" />
-    <Compile Include="Helpers\Comparer.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="MediaTypeHandling\MediaType.cs" />
     <Compile Include="MediaTypeHandling\MediaTypeHandlerEx.cs" />
@@ -130,9 +126,7 @@
     <Compile Include="Hosting\HandlerTypeInfo.cs" />
     <Compile Include="Helpers\ExportedTypeHelper.cs" />
     <Compile Include="Helpers\ExpressionHelper.cs" />
-    <Compile Include="Helpers\FileUtility.cs" />
     <Compile Include="MediaTypeHandling\FormDeserializer.cs" />
-    <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="IDelete.cs" />
     <Compile Include="IHead.cs" />
     <Compile Include="Behaviors\IModified.cs" />
@@ -143,7 +137,6 @@
     <Compile Include="Links\LinkBuilder.cs" />
     <Compile Include="Links\LinkHelper.cs" />
     <Compile Include="Helpers\ResponseExtensions.cs" />
-    <Compile Include="Helpers\UriFromType.cs" />
     <Compile Include="Helpers\UriTemplateHelper.cs" />
     <Compile Include="Protocol\HttpMethodAttribute.cs" />
     <Compile Include="IConfiguration.cs" />
@@ -153,7 +146,6 @@
     <Compile Include="Behaviors\IInput.cs" />
     <Compile Include="Behaviors\ICacheability.cs" />
     <Compile Include="Behaviors\IOutput.cs" />
-    <Compile Include="Helpers\IPathUtility.cs" />
     <Compile Include="IPost.cs" />
     <Compile Include="Behaviors\IMayRedirect.cs" />
     <Compile Include="IPostedFile.cs" />
@@ -162,7 +154,6 @@
     <Compile Include="DependencyInjection\ISimpleContainer.cs" />
     <Compile Include="IStartupTask.cs" />
     <Compile Include="Behaviors\IUploadFiles.cs" />
-    <Compile Include="IWebEnvironment.cs" />
     <Compile Include="MediaTypeHandling\Content.cs" />
     <Compile Include="CodeGeneration\PropertySetterBuilder.cs" />
     <Compile Include="Links\Link.cs" />
@@ -174,13 +165,10 @@
     <Compile Include="OwinSupport\OwinResponse.cs" />
     <Compile Include="OwinSupport\OwinStartupBase.cs" />
     <Compile Include="OwinSupport\PostedFile.cs" />
-    <Compile Include="OwinSupport\QueryStringParser.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="Raw.cs" />
     <Compile Include="RawHtml.cs" />
     <Compile Include="RegexGenericResolverAttribute.cs" />
-    <Compile Include="RespondsToAttribute.cs" />
-    <Compile Include="RespondsWithAttribute.cs" />
     <Compile Include="Routing\IMatcher.cs" />
     <Compile Include="Routing\MatchData.cs" />
     <Compile Include="Routing\MatcherBase.cs" />
@@ -198,7 +186,6 @@
     <Compile Include="Status.Redirect.cs" />
     <Compile Include="UnsupportedMediaTypeException.cs" />
     <Compile Include="UriTemplateAttribute.cs" />
-    <Compile Include="WebEnvironment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

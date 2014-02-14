@@ -62,9 +62,10 @@ namespace Simple.Http.Hosting
         private static void TryRun(Type type)
         {
             var task = Activator.CreateInstance(type) as IStartupTask;
+
             if (task != null)
             {
-                task.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
+                task.Run(SimpleHttp.Configuration);
             }
         }
     }

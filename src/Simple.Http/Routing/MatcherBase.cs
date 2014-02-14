@@ -16,17 +16,13 @@ namespace Simple.Http.Routing
 
     internal abstract class MatcherBase : IMatcher
     {
-        private readonly int priority;
-
         private readonly MatcherCollection matchers = new MatcherCollection();
         private readonly Dictionary<string, IMatcher> statics = new Dictionary<string, IMatcher>(StringComparer.OrdinalIgnoreCase);
         private List<HandlerTypeInfo> typeInfos;
-        private int totalPriority;
 
-        protected MatcherBase(string pattern, int priority)
+        protected MatcherBase(string pattern)
         {
             this.Pattern = pattern;
-            this.priority = priority;
         }
 
         public IList<HandlerTypeInfo> Items
@@ -62,7 +58,7 @@ namespace Simple.Http.Routing
                 this.typeInfos = new List<HandlerTypeInfo>();
             }
 
-            this.typeInfos.Add(typeInfo.SetPriority(this.totalPriority));
+            this.typeInfos.Add(typeInfo);
         }
 
         public bool Match(string part, string value, int index, MatchData matchData)
@@ -106,10 +102,8 @@ namespace Simple.Http.Routing
 
         protected abstract bool OnMatch(string part, MatchData matchData);
 
-        public IMatcher Add(string[] parts, int index, int thisPriority)
+        public IMatcher Add(string[] parts, int index)
         {
-            this.totalPriority = thisPriority + this.priority;
-
             if (index >= parts.Length)
             {
                 return this;
@@ -137,7 +131,7 @@ namespace Simple.Http.Routing
                 }
             }
 
-            return matcher.Add(parts, index + 1, this.totalPriority);
+            return matcher.Add(parts, index + 1);
         }
     }
 }

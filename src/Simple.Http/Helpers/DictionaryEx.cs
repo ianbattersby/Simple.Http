@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Simple.Http.OwinSupport
+namespace Simple.Http.Helpers
 {
     using System.Collections.Generic;
 

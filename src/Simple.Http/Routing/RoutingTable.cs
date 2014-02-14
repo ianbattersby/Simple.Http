@@ -69,7 +69,7 @@ namespace Simple.Http.Routing
                 return;
             }
 
-            matcher.Add(parts, 1, 0).AddTypeInfo(type);
+            matcher.Add(parts, 1).AddTypeInfo(type);
         }
 
         /// <summary>
@@ -77,10 +77,8 @@ namespace Simple.Http.Routing
         /// </summary>
         /// <param name="url">The URL to match upon.</param>
         /// <param name="variables">The variables.</param>
-        /// <param name="contentType">Value of the Content-Type header from the Request.</param>
-        /// <param name="acceptTypes">Values of the Accepts header from the Request.</param>
         /// <returns>The matched handler type.</returns>
-        public Type Get(string url, out IDictionary<string, string> variables, string contentType = null, IList<string> acceptTypes = null)
+        public Type GetHandlerTypeForUrl(string url, out IDictionary<string, string> variables)
         {
             variables = null;
             url = url.Trim('/');
@@ -115,7 +113,7 @@ namespace Simple.Http.Routing
                 return matchData.Single.HandlerType;
             }
 
-            return matchData.ResolveByMediaTypes(contentType, acceptTypes);
+            return null;
         }
 
         public HashSet<Type> GetAllTypes()

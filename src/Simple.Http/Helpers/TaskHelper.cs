@@ -40,17 +40,5 @@ namespace Simple.Http.Helpers
             tcs.SetResult(null);
             return tcs.Task;
         }
-
-        /// <summary>
-        /// Creates a faulted <see cref="Task"/>.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <returns>A faulted <see cref="Task"/> with the <c>Exception</c> property set to the specified value.</returns>
-        public static Task Exception(Exception exception)
-        {
-            var tcs = new TaskCompletionSource<object>();
-            tcs.SetException(exception);
-            return tcs.Task;
-        }
     }
 }

@@ -16,7 +16,7 @@
         public void CreatesInstanceOfType()
         {
             var startup = new TestStartup();
-            startup.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
+            startup.Run(SimpleHttp.Configuration);
             var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
             var actual = (TestHandler)actualFunc(new Dictionary<string, string> { { "TestProperty", "Foo" } }).Handler;
@@ -28,7 +28,7 @@
         public void DisposesInstances()
         {
             var startup = new TestStartup();
-            startup.Run(SimpleHttp.Configuration, SimpleHttp.Environment);
+            startup.Run(SimpleHttp.Configuration);
             var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
 

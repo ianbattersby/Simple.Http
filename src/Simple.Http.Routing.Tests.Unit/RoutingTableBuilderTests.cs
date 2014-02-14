@@ -57,32 +57,12 @@
         }
 
         [Fact]
-        public void FiltersHandlerByContentType()
-        {
-            var builder = new RoutingTableBuilder(typeof(IGet));
-            var table = builder.BuildRoutingTable();
-            IDictionary<string, string> variables;
-            var actual = table.Get("/spaceship", out variables, "", new[] { "image/png" });
-            Assert.Equal(typeof(GetSpaceshipImage), actual);
-        }
-
-        [Fact]
-        public void FiltersHandlerByWildcardContentType()
-        {
-            var builder = new RoutingTableBuilder(typeof(IGet));
-            var table = builder.BuildRoutingTable();
-            IDictionary<string, string> variables;
-            var actual = table.Get("/spaceship", out variables, "", new[] { "*/*" });
-            Assert.Equal(typeof(GetSpaceship), actual);
-        }
-
-        [Fact]
         public void FiltersHandlerByNoContentType()
         {
             var builder = new RoutingTableBuilder(typeof(IGet));
             var table = builder.BuildRoutingTable();
             IDictionary<string, string> variables;
-            var actual = table.Get("/spaceship", out variables);
+            var actual = table.GetHandlerTypeForUrl("/spaceship", out variables);
             Assert.Equal(typeof(GetSpaceship), actual);
         }
 
@@ -92,7 +72,7 @@
             var builder = new RoutingTableBuilder(typeof(IGet));
             var table = builder.BuildRoutingTable();
             IDictionary<string, string> variables;
-            var actual = table.Get("/top/bottom", out variables, "", new string[0]);
+            var actual = table.GetHandlerTypeForUrl("/top/bottom", out variables);
             Assert.Equal(typeof(Bottom), actual);
         }
 
@@ -101,11 +81,11 @@
         {
             var putTable = Application.BuildRoutingTable("PUT");
             IDictionary<string, string> variables;
-            var actualPut = putTable.Get("/dualmethod", out variables);
+            var actualPut = putTable.GetHandlerTypeForUrl("/dualmethod", out variables);
             Assert.Equal(typeof(DualMethod), actualPut);
 
             var patchTable = Application.BuildRoutingTable("PATCH");
-            var actualPatch = patchTable.Get("/dualmethod", out variables);
+            var actualPatch = patchTable.GetHandlerTypeForUrl("/dualmethod", out variables);
             Assert.Equal(typeof(DualMethod), actualPatch);
         }
     }
@@ -211,7 +191,6 @@
     }
 
     [UriTemplate("/spaceship")]
-    [RespondsWith("image/png")]
     public class GetSpaceshipImage : IGet
     {
         public Status Get()

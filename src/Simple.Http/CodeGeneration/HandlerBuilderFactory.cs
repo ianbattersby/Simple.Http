@@ -30,10 +30,10 @@ namespace Simple.Http.CodeGeneration
             // Begin container scope
             var container = Expression.Constant(this.configuration.Container);
             var containerScoped = Expression.Call(container, this.configuration.Container.GetType().GetMethod("BeginScope"));
-            var scope = Expression.Variable(typeof(ISimpleContainerScope));
+            var varScope = Expression.Variable(typeof(ISimpleContainerScope), "scope");
 
             // Create handler block
-            var getMethod = Expression.Call(scope, typeof(ISimpleContainerScope).GetMethod("Get").MakeGenericMethod(type));
+            var getMethod = Expression.Call(varScope, typeof(ISimpleContainerScope).GetMethod("Get").MakeGenericMethod(type));
             var instance = Expression.Variable(type);
             var construct = Expression.Assign(instance, getMethod);
             var variables = Expression.Parameter(typeof(IDictionary<string, string>));
@@ -45,14 +45,14 @@ namespace Simple.Http.CodeGeneration
 
             var lines = new List<Expression> 
             {
-                Expression.Assign(scope, containerScoped),
+                Expression.Assign(varScope, containerScoped),
                 Expression.Assign(createdInstance, handlerBlock),
                 scopedHandler,
-                Expression.Assign(scopedHandler, Expression.Call(typeof(ScopedHandler).GetMethod("Create", BindingFlags.Static | BindingFlags.Public), createdInstance, scope)),
+                Expression.Assign(scopedHandler, Expression.Call(typeof(ScopedHandler).GetMethod("Create", BindingFlags.Static | BindingFlags.Public), createdInstance, varScope)),
                 scopedHandler
             };
 
-            var scopeBlock = Expression.Block(typeof(IScopedHandler), new[] { createdInstance, scope, scopedHandler }, lines);
+            var scopeBlock = Expression.Block(typeof(IScopedHandler), new[] { createdInstance, varScope, scopedHandler }, lines);
 
             return Expression.Lambda<Func<IDictionary<string, string>, IScopedHandler>>(scopeBlock, variables).Compile();
         }

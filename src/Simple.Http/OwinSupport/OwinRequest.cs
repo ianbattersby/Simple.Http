@@ -14,6 +14,7 @@ namespace Simple.Http.OwinSupport
     using System.IO;
     using System.Web;
 
+    using Simple.Http.Helpers;
     using Simple.Http.Protocol;
 
     internal class OwinRequest : IRequest

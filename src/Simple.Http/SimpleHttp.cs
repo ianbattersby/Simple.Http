@@ -18,10 +18,5 @@ namespace Simple.Http
         /// The current Configuration for the app.
         /// </summary>
         public static readonly IConfiguration Configuration = new Configuration();
-
-        /// <summary>
-        /// Environmental information for the app.
-        /// </summary>
-        public static readonly IWebEnvironment Environment = new WebEnvironment();
     }
 }

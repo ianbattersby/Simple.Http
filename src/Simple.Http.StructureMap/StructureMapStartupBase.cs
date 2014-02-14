@@ -13,7 +13,7 @@ namespace Simple.Http.StructureMap
 
     public abstract class StructureMapStartupBase : IStartupTask
     {
-        public void Run(IConfiguration configuration, IWebEnvironment environment)
+        public void Run(IConfiguration configuration)
         {
             ObjectFactory.Configure(this.Configure);
             configuration.Container = new StructureMapContainer(ObjectFactory.Container);

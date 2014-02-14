@@ -45,10 +45,10 @@ namespace Simple.Http.CodeGeneration
         public PipelineFunctionFactory(Type handlerType)
         {
             this.handlerType = handlerType;
-            this.context = Expression.Parameter(typeof(IContext));
-            this.scopedHandler = Expression.Variable(typeof(IScopedHandler));
-            this.handler = Expression.Variable(this.handlerType);
-            this.handlerInfoVariable = Expression.Variable(typeof(HandlerInfo));
+            //this.context = Expression.Parameter(typeof(IContext), "context");
+            //this.scopedHandler = Expression.Variable(typeof(IScopedHandler), "scopedHandler");
+            //this.handler = Expression.Variable(this.handlerType, "handlerType");
+            //this.handlerInfoVariable = Expression.Variable(typeof(HandlerInfo), "handlerInfo");
         }
 
         public static Func<IContext, HandlerInfo, Task> Get(Type handlerType, string httpMethod)
@@ -172,54 +172,48 @@ namespace Simple.Http.CodeGeneration
 
         private Expression BuildCallExpression(IEnumerable<object> blocks)
         {
-            Expression call = Expression.Call(AsyncPipeline.DefaultStartMethod);
+            var expressions = new List<Expression>();
+
+            var typeTcs = typeof(TaskCompletionSource<>).MakeGenericType(typeof(bool));
+            var varTcs = Expression.Variable(typeTcs, "tcs");
+            var varHandlerType = Expression.Variable(typeof(Type), "handlerType");
+            var varContext = Expression.Variable(typeof(IContext), "context");
+
+            expressions.AddRange(
+                new[]
+                    {
+                        Expression.Assign(varTcs, Expression.New(typeTcs)),
+                        Expression.Assign(varHandlerType, Expression.Constant(this.handlerType)),
+                        Expression.Assign(varContext, this.context)
+                    });
 
             foreach (var block in blocks)
             {
                 if (block is HandlerBlock)
                 {
-                    call = this.BuildCallHandlerExpression(block, call);
+                    expressions.Add((block as HandlerBlock).Generate());
                 }
-                else
+                else if (block is PipelineBlock)
                 {
-                    PipelineBlock pipelineBlock;
-
-                    if ((pipelineBlock = block as PipelineBlock) != null)
-                    {
-                        call = Expression.Call(
-                            AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
-                            call,
-                            Expression.Constant(pipelineBlock.Generate(this.handlerType)),
-                            this.context,
-                            this.handler);
-                    }
-                    else
-                    {
-                        call = Expression.Call(
-                            AsyncPipeline.ContinueWithActionMethod(this.handlerType),
-                            call,
-                            Expression.Constant(block),
-                            this.context,
-                            this.handler);
-                    }
+                    expressions.AddRange((block as PipelineBlock).Generate(varHandlerType, varContext));
                 }
             }
 
-            return call;
+            return Expression.Block(new[] { varTcs, varHandlerType, varContext }, expressions);
         }
 
-        private Expression BuildCallHandlerExpression(object block, Expression call)
-        {
-            var handlerBlock = (HandlerBlock)block;
-            var runMethod = handlerBlock.Generate();
+        //private Expression BuildCallHandlerExpression(object block)
+        //{
+        //    var handlerBlock = (HandlerBlock)block;
+        //    var runMethod = handlerBlock.Generate();
 
-            return Expression.Call(
-                AsyncPipeline.ContinueWithHandlerMethod(this.handlerType),
-                call,
-                Expression.Constant(runMethod),
-                this.context,
-                this.handler);
-        }
+        //    return Expression.Call(
+        //        AsyncPipeline.ContinueWithHandlerMethod(this.handlerType),
+        //        call,
+        //        Expression.Constant(runMethod),
+        //        this.context,
+        //        this.handler);
+        //}
 
         private MethodInfo GetRunMethod(string httpMethod)
         {

@@ -10,10 +10,14 @@
 namespace Simple.Http.CodeGeneration
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using Helpers;
     using Simple.Http;
+    using Simple.Http.OwinSupport;
     using Simple.Http.Protocol;
 
     internal class AsyncPipeline
@@ -35,6 +39,11 @@ namespace Simple.Http.CodeGeneration
         public static MethodInfo ContinueWithAsyncHandlerMethod(Type handlerType)
         {
             return GetMethod("ContinueWithAsyncHandler", handlerType);
+        }
+
+        public static MethodInfo Block(Type handlerType)
+        {
+            return GetMethod("Block", handlerType);
         }
 
         public static MethodInfo ContinueWithAsyncBlockMethod(Type handlerType)
@@ -64,6 +73,22 @@ namespace Simple.Http.CodeGeneration
             return func(handler, context);
         }
 
+        private static bool Block<THandler>(
+            TaskCompletionSource<bool> tcs,
+            THandler handler,
+            IContext context)
+        {
+            return false;
+        }
+
+        private static bool Handler<THandler>(
+            TaskCompletionSource<bool> tcs,
+            THandler handler,
+            IContext context)
+        {
+            return false;
+        }
+
         private static Task<bool> ContinueWithAsyncBlock<THandler>(Task<bool> task, Func<THandler, IContext, Task<bool>> continuation, IContext context, THandler handler)
         {
             return task.ContinueWith(
@@ -87,12 +112,12 @@ namespace Simple.Http.CodeGeneration
                     if (t.Result)
                     {
                         context.Response.Status = continuation(handler, context);
-                        return true;
+                        return TaskHelper.Completed(true);
                     }
 
-                    return false;
+                    return TaskHelper.Completed(false);
                 },
-                TaskContinuationOptions.OnlyOnRanToCompletion);
+                TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
         }
 
         private static Task<bool> ContinueWithAction<THandler>(
@@ -107,12 +132,64 @@ namespace Simple.Http.CodeGeneration
                     if (t.Result)
                     {
                         continuation(handler, context);
-                        return true;
+                        return TaskHelper.Completed(true);
                     }
 
-                    return false;
+                    return TaskHelper.Completed(false);
                 },
-                TaskContinuationOptions.OnlyOnRanToCompletion);
+                TaskContinuationOptions.OnlyOnRanToCompletion).Unwrap();
+        }
+
+        private static Task WriteResponse(OwinContext context, IDictionary<string, object> env)
+        {
+            var tcs = new TaskCompletionSource<int>();
+
+            var cancellationToken = (CancellationToken)env[OwinKeys.CallCancelled];
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                tcs.SetCanceled();
+            }
+            else
+            {
+                try
+                {
+                    context.Response.EnsureContentTypeCharset();
+
+                    env.Add(OwinKeys.StatusCode, context.Response.Status.Code);
+                    env.Add(OwinKeys.ReasonPhrase, context.Response.Status.Description);
+
+                    if (context.Response.Headers != null)
+                    {
+                        var responseHeaders = (IDictionary<string, string[]>)env[OwinKeys.ResponseHeaders];
+
+                        foreach (var header in context.Response.Headers)
+                        {
+                            if (responseHeaders.ContainsKey(header.Key))
+                            {
+                                responseHeaders[header.Key] = header.Value;
+                            }
+                            else
+                            {
+                                responseHeaders.Add(header.Key, header.Value);
+                            }
+                        }
+                    }
+
+                    if (context.Response.WriteFunction != null)
+                    {
+                        return context.Response.WriteFunction((Stream)env[OwinKeys.ResponseBody]);
+                    }
+
+                    tcs.SetResult(0);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            }
+
+            return tcs.Task;
         }
     }
 }
