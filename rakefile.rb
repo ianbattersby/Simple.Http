@@ -99,12 +99,16 @@ end
 task :default => [:test]
 
 desc "Build"
-task :build => [:init, :assemblyinfo] do
+task :build => [:init, :assemblyinfo, :packagerestore] do
 	if MONO
 		Rake::Task[:xbuild].invoke
 	else
 		Rake::Task[:msbuild].invoke
 	end
+end
+
+task :packagerestore do
+    sh "#{NUGET_COMMAND} restore #{SOLUTION_FILE}"
 end
 
 desc "Build + Tests (default)"
