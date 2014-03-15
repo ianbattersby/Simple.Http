@@ -73,10 +73,10 @@ namespace Simple.Http.CodeGeneration
 
         private void CreatePropertyExpressions()
         {
-            var name = Expression.Constant(this.property.Name, typeof(string));
-            this.containsKey = Expression.Call(this.param, DictionaryContainsKeyMethod, name);
+            var constName = Expression.Constant(this.property.Name, typeof(string));
+            this.containsKey = Expression.Call(this.param, DictionaryContainsKeyMethod, constName);
             this.nameProperty = Expression.Property(this.obj, this.property);
-            this.itemProperty = Expression.Property(this.param, DictionaryIndexerProperty, name);
+            this.itemProperty = Expression.Property(this.param, DictionaryIndexerProperty, constName);
         }
 
         private CatchBlock CreateCatchBlock()
@@ -246,7 +246,7 @@ namespace Simple.Http.CodeGeneration
             ParameterExpression instance,
             BinaryExpression construct)
         {
-            var variables = Expression.Variable(typeof(IDictionary<string, string[]>));
+            var variables = Expression.Variable(typeof(IDictionary<string, string[]>), "variables");
             var lines = new List<Expression> { construct, Expression.Assign(variables, getVariables) };
 
             var setters = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)

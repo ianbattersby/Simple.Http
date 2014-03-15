@@ -24,20 +24,19 @@ namespace Simple.Http.CodeGeneration
     internal class PipelineFunctionFactory
     {
         private static readonly IDictionary<Type, IDictionary<string, Func<IContext, HandlerInfo, Task>>> RunMethodCache =
-                                    new Dictionary<Type, IDictionary<string, Func<IContext, HandlerInfo, Task>>>();
+            new Dictionary<Type, IDictionary<string, Func<IContext, HandlerInfo, Task>>>();
 
         private static readonly ICollection RunMethodCacheCollection;
 
         private readonly Type handlerType;
-        private readonly ParameterExpression context;
-        private readonly ParameterExpression scopedHandler;
-        private readonly ParameterExpression handler;
-        private readonly ParameterExpression handlerInfoVariable;
+        private readonly ParameterExpression paramContext;
+        private readonly ParameterExpression paramScopedHandler;
+        private readonly ParameterExpression paramHandler;
+        private readonly ParameterExpression paramHandlerInfoVariable;
 
         static PipelineFunctionFactory()
         {
             var cache = new Dictionary<Type, IDictionary<string, Func<IContext, HandlerInfo, Task>>>();
-
             RunMethodCache = cache;
             RunMethodCacheCollection = cache;
         }
@@ -45,10 +44,10 @@ namespace Simple.Http.CodeGeneration
         public PipelineFunctionFactory(Type handlerType)
         {
             this.handlerType = handlerType;
-            //this.context = Expression.Parameter(typeof(IContext), "context");
-            //this.scopedHandler = Expression.Variable(typeof(IScopedHandler), "scopedHandler");
-            //this.handler = Expression.Variable(this.handlerType, "handlerType");
-            //this.handlerInfoVariable = Expression.Variable(typeof(HandlerInfo), "handlerInfo");
+            this.paramContext = Expression.Parameter(typeof(IContext), "context");
+            this.paramScopedHandler = Expression.Variable(typeof(IScopedHandler), "scopedHandler");
+            this.paramHandler = Expression.Variable(this.handlerType, "handler");
+            this.paramHandlerInfoVariable = Expression.Variable(typeof(HandlerInfo), "handlerInfo");
         }
 
         public static Func<IContext, HandlerInfo, Task> Get(Type handlerType, string httpMethod)
@@ -62,14 +61,11 @@ namespace Simple.Http.CodeGeneration
                     if (!RunMethodCache.TryGetValue(handlerType, out handlerCache))
                     {
                         var asyncRunMethod = new PipelineFunctionFactory(handlerType).BuildAsyncRunMethod(httpMethod);
-                        
                         handlerCache = new Dictionary<string, Func<IContext, HandlerInfo, Task>>
                             {
                                 { httpMethod, asyncRunMethod }
                             };
-
                         RunMethodCache.Add(handlerType, handlerCache);
-                        
                         return asyncRunMethod;
                     }
                 }
@@ -97,17 +93,14 @@ namespace Simple.Http.CodeGeneration
             var blocks = new List<object>();
 
             blocks.AddRange(CreateBlocks(this.GetSetupBehaviorInfos()));
-
-            var second = new HandlerBlock(this.handlerType, this.GetRunMethod(httpMethod));
-
-            blocks.Add(second);
+            
+            blocks.Add(new HandlerBlock(this.handlerType, this.GetRunMethod(httpMethod)));
 
             var redirectBehavior = new ResponseBehaviorInfo(typeof(object), typeof(Redirect2), Priority.High) { Universal = true };
 
             blocks.AddRange(CreateBlocks(this.GetResponseBehaviorInfos(redirectBehavior)));
 
             var outputs = this.GetOutputBehaviorInfos().ToList();
-
             if (outputs.Count > 0)
             {
                 blocks.AddRange(CreateBlocks(outputs));
@@ -130,21 +123,21 @@ namespace Simple.Http.CodeGeneration
 
             var createHandler = this.BuildCreateHandlerExpression();
 
-            var lambdaBlock = Expression.Block(new[] { this.handler }, new[] { createHandler, call });
+            var lambdaBlock = Expression.Block(new[] { this.paramHandler }, new[] { createHandler, call });
 
-            var lambda = Expression.Lambda(lambdaBlock, this.context, this.handlerInfoVariable);
+            var lambda = Expression.Lambda(lambdaBlock, this.paramContext, this.paramHandlerInfoVariable);
             return (Func<IContext, HandlerInfo, Task>)lambda.Compile();
         }
 
         private Expression BuildCreateHandlerExpression()
         {
-            var factory = Expression.Constant(HandlerFactory.Instance);
-            var createScopedHandler = Expression.Assign(this.scopedHandler, Expression.Call(factory, HandlerFactory.GetHandlerMethod, this.handlerInfoVariable));
-            var assignHandler = Expression.Assign(this.handler, Expression.Convert(Expression.Property(this.scopedHandler, "Handler"), this.handlerType));
+            var constFactory = Expression.Constant(HandlerFactory.Instance);
+            var assignCreateScopedHandler = Expression.Assign(this.paramScopedHandler, Expression.Call(constFactory, HandlerFactory.GetHandlerMethod, this.paramHandlerInfoVariable));
+            var assignHandler = Expression.Assign(this.paramHandler, Expression.Convert(Expression.Property(this.paramScopedHandler, "Handler"), this.handlerType));
 
             return Expression.Block(
-                new[] { this.scopedHandler },
-                new Expression[] { createScopedHandler, assignHandler });
+                new[] { this.paramScopedHandler },
+                new Expression[] { assignCreateScopedHandler, assignHandler });
         }
 
         private static IEnumerable<PipelineBlock> CreateBlocks(IEnumerable<BehaviorInfo> behaviorInfos)
@@ -154,7 +147,6 @@ namespace Simple.Http.CodeGeneration
             foreach (var behaviorInfo in behaviorInfos)
             {
                 var method = behaviorInfo.GetMethod();
-
                 pipelineBlock.Add(method);
 
                 if (method.ReturnType != typeof(void))
@@ -172,48 +164,60 @@ namespace Simple.Http.CodeGeneration
 
         private Expression BuildCallExpression(IEnumerable<object> blocks)
         {
-            var expressions = new List<Expression>();
+            HandlerBlock handlerBlock;
+            PipelineBlock pipelineBlock;
 
-            var typeTcs = typeof(TaskCompletionSource<>).MakeGenericType(typeof(bool));
-            var varTcs = Expression.Variable(typeTcs, "tcs");
-            var varHandlerType = Expression.Variable(typeof(Type), "handlerType");
-            var varContext = Expression.Variable(typeof(IContext), "context");
-
-            expressions.AddRange(
-                new[]
-                    {
-                        Expression.Assign(varTcs, Expression.New(typeTcs)),
-                        Expression.Assign(varHandlerType, Expression.Constant(this.handlerType)),
-                        Expression.Assign(varContext, this.context)
-                    });
+            Expression call = Expression.Call(AsyncPipeline.DefaultStartMethod);
 
             foreach (var block in blocks)
             {
-                if (block is HandlerBlock)
+                if (call == null)
                 {
-                    expressions.Add((block as HandlerBlock).Generate());
+                    var method = ((PipelineBlock)block).Generate(this.handlerType);
+                    call = Expression.Call(AsyncPipeline.StartMethod(this.handlerType), Expression.Constant(method), this.paramContext, this.paramHandler);
                 }
-                else if (block is PipelineBlock)
+                else if (block is HandlerBlock)
                 {
-                    expressions.AddRange((block as PipelineBlock).Generate(varHandlerType, varContext));
+                    call = this.BuildCallHandlerExpression(block, call);
+                }
+                else if ((pipelineBlock = block as PipelineBlock) != null)
+                {
+                    call = Expression.Call(
+                        AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
+                        call,
+                        Expression.Constant(pipelineBlock.Generate(this.handlerType)),
+                        this.paramContext,
+                        this.paramHandler);
+                }
+                else
+                {
+                    call = Expression.Call(
+                        AsyncPipeline.ContinueWithActionMethod(this.handlerType),
+                        call,
+                        Expression.Constant(block),
+                        this.paramContext,
+                        this.paramHandler);
                 }
             }
 
-            return Expression.Block(new[] { varTcs, varHandlerType, varContext }, expressions);
+            return call;
         }
 
-        //private Expression BuildCallHandlerExpression(object block)
-        //{
-        //    var handlerBlock = (HandlerBlock)block;
-        //    var runMethod = handlerBlock.Generate();
+        private Expression BuildCallHandlerExpression(object block, Expression call)
+        {
+            var handlerBlock = (HandlerBlock)block;
 
-        //    return Expression.Call(
-        //        AsyncPipeline.ContinueWithHandlerMethod(this.handlerType),
-        //        call,
-        //        Expression.Constant(runMethod),
-        //        this.context,
-        //        this.handler);
-        //}
+            var runMethod = handlerBlock.Generate();
+
+            call = Expression.Call(
+                AsyncPipeline.ContinueWithHandlerMethod(this.handlerType),
+                call,
+                Expression.Constant(runMethod.Compile()),
+                this.paramContext,
+                this.paramHandler);
+
+            return call;
+        }
 
         private MethodInfo GetRunMethod(string httpMethod)
         {
@@ -225,8 +229,7 @@ namespace Simple.Http.CodeGeneration
 
         private IEnumerable<BehaviorInfo> GetSetupBehaviorInfos()
         {
-            // ReSharper disable once ConvertClosureToMethodGroup
-            return RequestBehaviorInfo.GetInPriorityOrder().Where(x => this.HandlerHasBehavior(x)).ToArray();
+            return RequestBehaviorInfo.GetInPriorityOrder().Where(this.HandlerHasBehavior);
         }
 
         private IEnumerable<BehaviorInfo> GetResponseBehaviorInfos(params ResponseBehaviorInfo[] defaults)
@@ -250,6 +253,11 @@ namespace Simple.Http.CodeGeneration
             }
 
             return behaviorInfo.BehaviorType.IsAssignableFrom(this.handlerType);
+        }
+
+        private Action<THandler, IContext> BuildAction<THandler>(IEnumerable<Expression> blocks)
+        {
+            return Expression.Lambda<Action<THandler, IContext>>(Expression.Block(blocks), this.paramHandler, this.paramContext).Compile();
         }
     }
 }

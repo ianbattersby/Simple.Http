@@ -19,8 +19,6 @@ namespace Simple.Http.Routing
     {
         private bool set;
 
-        private HandlerTypeInfo[] prioritised;
-
         public IDictionary<string, string> Variables { get; private set; }
 
         public List<HandlerTypeInfo> List { get; private set; }

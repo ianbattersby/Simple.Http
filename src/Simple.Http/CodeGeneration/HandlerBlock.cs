@@ -27,17 +27,17 @@ namespace Simple.Http.CodeGeneration
             this.method = method;
         }
 
-        public Expression Generate()
+        public LambdaExpression Generate()
         {
-            var context = Expression.Parameter(typeof(IContext));
-            var handler = Expression.Parameter(this.handlerType);
+            var paramContext = Expression.Parameter(typeof(IContext), "context");
+            var paramHandler = Expression.Parameter(this.handlerType, "handler");
 
             var parameters = this.method.GetParameters();
 
             if (parameters.Length == 0)
             {
-                Expression call = Expression.Call(handler, this.method);
-                return Expression.Lambda(call, handler, context);
+                Expression call = Expression.Call(paramHandler, this.method);
+                return Expression.Lambda(call, paramHandler, paramContext);
             }
             else if (parameters.Length == 1)
             {
@@ -45,9 +45,9 @@ namespace Simple.Http.CodeGeneration
                     typeof(GetInput).GetMethod("Impl", BindingFlags.Public | BindingFlags.Static)
                         .MakeGenericMethod(parameters[0].ParameterType);
 
-                Expression call = Expression.Call(handler, this.method, Expression.Call(getInput, context));
+                Expression call = Expression.Call(paramHandler, this.method, Expression.Call(getInput, paramContext));
 
-                return Expression.Lambda(call, handler, context);
+                return Expression.Lambda(call, paramHandler, paramContext);
             }
             else
             {

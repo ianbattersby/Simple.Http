@@ -28,33 +28,33 @@ namespace Simple.Http.CodeGeneration
         public Func<IDictionary<string, string>, IScopedHandler> BuildHandlerBuilder(Type type)
         {
             // Begin container scope
-            var container = Expression.Constant(this.configuration.Container);
-            var containerScoped = Expression.Call(container, this.configuration.Container.GetType().GetMethod("BeginScope"));
+            var constContainer = Expression.Constant(this.configuration.Container);
+            var callContainerScoped = Expression.Call(constContainer, this.configuration.Container.GetType().GetMethod("BeginScope"));
             var varScope = Expression.Variable(typeof(ISimpleContainerScope), "scope");
 
             // Create handler block
-            var getMethod = Expression.Call(varScope, typeof(ISimpleContainerScope).GetMethod("Get").MakeGenericMethod(type));
-            var instance = Expression.Variable(type);
-            var construct = Expression.Assign(instance, getMethod);
-            var variables = Expression.Parameter(typeof(IDictionary<string, string>));
-            var handlerBlock = PropertySetterBuilder.MakePropertySetterBlock(type, variables, instance, construct);
+            var callGetMethod = Expression.Call(varScope, typeof(ISimpleContainerScope).GetMethod("Get").MakeGenericMethod(type));
+            var varInstance = Expression.Variable(type, "handler");
+            var assignConstruct = Expression.Assign(varInstance, callGetMethod);
+            var paramVariables = Expression.Parameter(typeof(IDictionary<string, string>), "variables");
+            var blockHandler = PropertySetterBuilder.MakePropertySetterBlock(type, paramVariables, varInstance, assignConstruct);
 
             // Wrap handler block in IScopedHandler so we can dispose it later
-            var createdInstance = Expression.Variable(type);
-            var scopedHandler = Expression.Variable(typeof(IScopedHandler));
+            var varCreatedInstance = Expression.Variable(type, "handler");
+            var varScopedHandler = Expression.Variable(typeof(IScopedHandler), "scopedHandler");
 
             var lines = new List<Expression> 
             {
-                Expression.Assign(varScope, containerScoped),
-                Expression.Assign(createdInstance, handlerBlock),
-                scopedHandler,
-                Expression.Assign(scopedHandler, Expression.Call(typeof(ScopedHandler).GetMethod("Create", BindingFlags.Static | BindingFlags.Public), createdInstance, varScope)),
-                scopedHandler
+                Expression.Assign(varScope, callContainerScoped),
+                Expression.Assign(varCreatedInstance, blockHandler),
+                varScopedHandler,
+                Expression.Assign(varScopedHandler, Expression.Call(typeof(ScopedHandler).GetMethod("Create", BindingFlags.Static | BindingFlags.Public), varCreatedInstance, varScope)),
+                varScopedHandler
             };
 
-            var scopeBlock = Expression.Block(typeof(IScopedHandler), new[] { createdInstance, varScope, scopedHandler }, lines);
+            var scopeBlock = Expression.Block(typeof(IScopedHandler), new[] { varCreatedInstance, varScope, varScopedHandler }, lines);
 
-            return Expression.Lambda<Func<IDictionary<string, string>, IScopedHandler>>(scopeBlock, variables).Compile();
+            return Expression.Lambda<Func<IDictionary<string, string>, IScopedHandler>>(scopeBlock, paramVariables).Compile();
         }
     }
 }

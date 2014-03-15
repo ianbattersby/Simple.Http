@@ -36,34 +36,35 @@ namespace Simple.Http.CodeGeneration
             this.methods.Add(method);
         }
 
-        public IEnumerable<Expression> Generate(Expression varHandler, Expression varContext)
+        public Delegate Generate(Type handlerType)
         {
-            return this.methods.Select(m => CreateCall(m, varHandler, varContext, varHandler.Type));
+            var paramContext = Expression.Parameter(typeof(IContext), "context");
+            var paramHandler = Expression.Parameter(handlerType, "handler");
 
-            //var calls = new List<Expression>();
-            //calls.AddRange(this.methods.Select(m => CreateCall(m, varHandler, varContext, varHandler.Type)));
+            var calls = new List<Expression>();
+            calls.AddRange(this.methods.Select(m => CreateCall(m, paramHandler, paramContext, handlerType)));
 
-            //if (this.methods.Last().ReturnType == typeof(void))
-            //{
-            //    calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompletedTask", BindingFlags.Static | BindingFlags.NonPublic)));
-            //}
-            //else if (this.methods.Last().ReturnType == typeof(bool))
-            //{
-            //    FixLastCall(calls, "CompleteBooleanTask");
-            //}
-            //else if (this.methods.Last().ReturnType == typeof(Task))
-            //{
-            //    FixLastCall(calls, "CompleteAsyncTask");
-            //}
-            //else
-            //{
-            //    throw new InvalidOperationException(
-            //        "Behavior implementation methods may only return void, bool, Task, or Task<bool>.");
-            //}
+            if (this.methods.Last().ReturnType == typeof(void))
+            {
+                calls.Add(Expression.Call(typeof(PipelineBlock).GetMethod("CompletedTask", BindingFlags.Static | BindingFlags.NonPublic)));
+            }
+            else if (this.methods.Last().ReturnType == typeof(bool))
+            {
+                FixLastCall(calls, "CompleteBooleanTask");
+            }
+            else if (this.methods.Last().ReturnType == typeof(Task))
+            {
+                FixLastCall(calls, "CompleteAsyncTask");
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    "Behavior implementation methods may only return void, bool, Task, or Task<bool>.");
+            }
 
-            //var block = Expression.Block(calls);
+            var block = Expression.Block(calls);
 
-            //return Expression.Lambda(block, handler, context);
+            return Expression.Lambda(block, paramHandler, paramContext).Compile();
         }
 
         public static Expression CreateCall(MethodInfo method, Expression handler, Expression context, Type handlerType)
