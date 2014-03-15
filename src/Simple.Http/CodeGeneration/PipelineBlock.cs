@@ -36,7 +36,7 @@ namespace Simple.Http.CodeGeneration
             this.methods.Add(method);
         }
 
-        public Delegate Generate(Type handlerType)
+        public LambdaExpression Generate(Type handlerType)
         {
             var paramContext = Expression.Parameter(typeof(IContext), "context");
             var paramHandler = Expression.Parameter(handlerType, "handler");
@@ -64,7 +64,7 @@ namespace Simple.Http.CodeGeneration
 
             var block = Expression.Block(calls);
 
-            return Expression.Lambda(block, paramHandler, paramContext).Compile();
+            return Expression.Lambda(block, paramHandler, paramContext);
         }
 
         public static Expression CreateCall(MethodInfo method, Expression handler, Expression context, Type handlerType)

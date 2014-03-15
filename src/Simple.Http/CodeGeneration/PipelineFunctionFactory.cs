@@ -174,7 +174,7 @@ namespace Simple.Http.CodeGeneration
                 if (call == null)
                 {
                     var method = ((PipelineBlock)block).Generate(this.handlerType);
-                    call = Expression.Call(AsyncPipeline.StartMethod(this.handlerType), Expression.Constant(method), this.paramContext, this.paramHandler);
+                    call = Expression.Call(AsyncPipeline.StartMethod(this.handlerType), Expression.Constant(method.Compile()), this.paramContext, this.paramHandler);
                 }
                 else if (block is HandlerBlock)
                 {
@@ -185,7 +185,7 @@ namespace Simple.Http.CodeGeneration
                     call = Expression.Call(
                         AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
                         call,
-                        Expression.Constant(pipelineBlock.Generate(this.handlerType)),
+                        Expression.Constant(pipelineBlock.Generate(this.handlerType).Compile()),
                         this.paramContext,
                         this.paramHandler);
                 }
@@ -253,11 +253,6 @@ namespace Simple.Http.CodeGeneration
             }
 
             return behaviorInfo.BehaviorType.IsAssignableFrom(this.handlerType);
-        }
-
-        private Action<THandler, IContext> BuildAction<THandler>(IEnumerable<Expression> blocks)
-        {
-            return Expression.Lambda<Action<THandler, IContext>>(Expression.Block(blocks), this.paramHandler, this.paramContext).Compile();
         }
     }
 }
