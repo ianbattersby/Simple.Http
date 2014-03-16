@@ -18,86 +18,101 @@
         {
             var content = new Content(new Uri("http://test.com/order/42"), new OrderHandler(), new Order { Id = 54, CustomerId = 42 });
             var target = new XmlMediaTypeHandler();
+
             string actual;
+
             using (var stream = new NonClosingMemoryStream(new MemoryStream()))
             {
                 target.Write(content, stream);
                 stream.Position = 0;
+
                 using (var reader = new StreamReader(stream))
                 {
                     actual = reader.ReadToEnd();
                 }
+
                 stream.ForceDispose();
             }
+
             Assert.NotNull(actual);
 
-	        const string Expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
-	                                "       xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
-	                                "  <CustomerId>42</CustomerId>"+
-	                                "  <Id>54</Id>"+
-	                                "</Order>";
+            const string Expected = "<Order xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
+                                    "       xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
+                                    "  <CustomerId>42</CustomerId>" +
+                                    "  <Id>54</Id>" +
+                                    "</Order>";
 
-			XElement.Parse(actual).ShouldEqual(Expected);
+            XElement.Parse(actual).ShouldEqual(Expected);
         }
-        
+
         [Fact]
         public void PicksUpOrdersLinkFromCustomer()
         {
             var content = new Content(new Uri("http://test.com/customer/42"), new CustomerHandler(), new Customer { Id = 42 });
             var target = new XmlMediaTypeHandler();
+
             string actual;
+
             using (var stream = new NonClosingMemoryStream(new MemoryStream()))
             {
                 target.Write(content, stream);
                 stream.Position = 0;
+
                 using (var reader = new StreamReader(stream))
                 {
                     actual = reader.ReadToEnd();
                 }
+
                 stream.ForceDispose();
             }
+
             Assert.NotNull(actual);
 
-	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
-	                                "<Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
-	                                "          xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
-	                                "  <Id>42</Id>" +
-	                                "  <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
-	                                "  <link href='/customer/42' rel='self' type='application/vnd.customer+xml' xmlns='' />" +
-	                                "</Customer>";
+            const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
+                                    "<Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
+                                    "          xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
+                                    "  <Id>42</Id>" +
+                                    "  <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
+                                    "  <link href='/customer/42' rel='self' type='application/vnd.customer+xml' xmlns='' />" +
+                                    "</Customer>";
 
-			XElement.Parse(actual).ShouldEqual(Expected);
+            XElement.Parse(actual).ShouldEqual(Expected);
         }
-        
+
         [Fact]
         public void PicksUpOrdersLinkFromCustomers()
         {
             var content = new Content(new Uri("http://test.com/customer/42"), new CustomerHandler(), new[] { new Customer { Id = 42 } });
             var target = new XmlMediaTypeHandler();
+
             string actual;
+
             using (var stream = new NonClosingMemoryStream(new MemoryStream()))
             {
                 target.Write(content, stream);
                 stream.Position = 0;
+
                 using (var reader = new StreamReader(stream))
                 {
                     actual = reader.ReadToEnd();
                 }
+
                 stream.ForceDispose();
             }
+
             Assert.NotNull(actual);
 
-	        const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
-	                                "<Customers>" +
-	                                "  <Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
-	                                "            xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
-	                                "    <Id>42</Id>" +
-	                                "    <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
-	                                "    <link href='/customer/42' rel='self' type='application/vnd.customer+xml' xmlns='' />" +
-	                                "  </Customer>" +
-	                                "</Customers>";
-			
-			XElement.Parse(actual).ShouldEqual(Expected);
+            const string Expected = "<?xml version='1.0' encoding='utf-8'?>" +
+                                    "<Customers>" +
+                                    "  <Customer xmlns='http://schemas.datacontract.org/2004/07/Simple.Http.Xml.Tests.Unit'" +
+                                    "            xmlns:i='http://www.w3.org/2001/XMLSchema-instance'>" +
+                                    "    <Id>42</Id>" +
+                                    "    <link href='/customer/42/orders' rel='customer.orders' type='application/vnd.list.order+xml' xmlns='' />" +
+                                    "    <link href='/customer/42' rel='self' type='application/vnd.customer+xml' xmlns='' />" +
+                                    "  </Customer>" +
+                                    "</Customers>";
+
+            XElement.Parse(actual).ShouldEqual(Expected);
         }
     }
 

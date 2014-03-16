@@ -17,6 +17,7 @@
             var handler = new GenericJSONHandler();
             var acceptedTypes = new List<string> { "application/something+json", "text/html" };
             var contentType = handler.GetContentType(acceptedTypes);
+
             Assert.Equal("application/something+json", contentType);
         }
 
@@ -26,6 +27,7 @@
             var handler = new GenericJSONWithFallbackHandler();
             var acceptedTypes = new List<string> { "application/something+xml", "text/html" };
             var contentType = handler.GetContentType(acceptedTypes);
+            
             Assert.Equal("text/html", contentType);
         }
 
@@ -35,6 +37,7 @@
             var handler = new PlainHTMLHandler();
             var acceptedTypes = new List<string> { "application/something+json", "text/html" };
             var contentType = handler.GetContentType(acceptedTypes);
+            
             Assert.Equal("text/html", contentType);
         }
 

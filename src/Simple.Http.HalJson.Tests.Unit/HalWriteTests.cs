@@ -1,12 +1,15 @@
-﻿namespace Simple.Http.HalJson.Tests
+﻿namespace Simple.Http.HalJson.Tests.Unit
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
-    using JsonNet;
-    using Links;
-    using MediaTypeHandling;
-    using Newtonsoft.Json;
+
     using Newtonsoft.Json.Linq;
+
+    using Simple.Http.JsonNet;
+    using Simple.Http.Links;
+    using Simple.Http.MediaTypeHandling;
+
     using Xunit;
 
     public class HalWriteTests
@@ -16,9 +19,10 @@
         {
             JObject actual;
 
-            var person = new Person {Name = "Marvin", Location = "Car Park"};
-            var content = new Content(new PersonHandler(), person);
+            var person = new Person { Name = "Marvin", Location = "Car Park" };
+            var content = new Content(new Uri("http://test.com/person/Marvin"), new PersonHandler(), person);
             var target = new HalJsonMediaTypeHandler();
+
             using (var stream = new MemoryStream())
             {
                 target.Write(content, stream).Wait();
@@ -29,10 +33,12 @@
 
             Assert.Equal("Marvin", actual["name"]);
             Assert.Equal("Car Park", actual["location"]);
+
             var links = (JObject)actual["_links"];
+
             Assert.Equal("/person/Marvin", links["self"]["href"]);
         }
-        
+
         [Fact]
         public void WritesCollectionWithLinks()
         {
@@ -43,8 +49,10 @@
                                  new Person {Name = "Marvin", Location = "Car Park"},
                                  new Person {Name = "Zaphod", Location = "The Restaurant at the End of the Universe"}
                              };
-            var content = new Content(new PeopleHandler(), people);
+
+            var content = new Content(new Uri("http://test.com/people"), new PeopleHandler(), people);
             var target = new HalJsonMediaTypeHandler();
+
             using (var stream = new MemoryStream())
             {
                 target.Write(content, stream).Wait();
@@ -53,13 +61,16 @@
                 actual = JObject.Parse(text);
             }
 
-            var array = (JArray) actual["collection"];
+            var array = (JArray)actual["collection"];
             Assert.Equal(2, array.Count);
+
             var marvin = array.First;
             Assert.Equal("Marvin", marvin["name"]);
             Assert.Equal("Car Park", marvin["location"]);
-            var marvinLinks = (JObject) marvin["_links"];
+
+            var marvinLinks = (JObject)marvin["_links"];
             Assert.Equal("/person/Marvin", marvinLinks["self"]["href"]);
+
             var links = (JObject)actual["_links"];
             Assert.Equal("/people", links["self"]["href"]);
         }
@@ -69,13 +80,13 @@
     [UriTemplate("/person/{Name}")]
     public class PersonHandler
     {
-        
+
     }
 
     [Canonical(typeof(IEnumerable<Person>))]
     [UriTemplate("/people")]
     public class PeopleHandler
     {
-        
+
     }
 }

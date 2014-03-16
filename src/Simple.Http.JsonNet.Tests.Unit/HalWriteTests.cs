@@ -22,6 +22,7 @@
             var person = new Person {Name = "Marvin", Location = "Car Park"};
             var content = new Content(new Uri("http://test.com/person/Marvin"), new PersonHandler(), person);
             var target = new HalJsonMediaTypeHandler();
+
             using (var stream = new MemoryStream())
             {
                 target.Write(content, stream).Wait();
@@ -32,6 +33,7 @@
 
             Assert.Equal("Marvin", actual["name"]);
             Assert.Equal("Car Park", actual["location"]);
+            
             var links = (JObject)actual["_links"];
             Assert.Equal("/person/Marvin", links["self"]["href"]);
         }
@@ -46,8 +48,10 @@
                                  new Person {Name = "Marvin", Location = "Car Park"},
                                  new Person {Name = "Zaphod", Location = "The Restaurant at the End of the Universe"}
                              };
+            
             var content = new Content(new Uri("http://test.com/people"), new PeopleHandler(), people);
             var target = new HalJsonMediaTypeHandler();
+            
             using (var stream = new MemoryStream())
             {
                 target.Write(content, stream).Wait();
@@ -58,11 +62,14 @@
 
             var array = (JArray) actual["collection"];
             Assert.Equal(2, array.Count);
+            
             var marvin = array.First;
             Assert.Equal("Marvin", marvin["name"]);
             Assert.Equal("Car Park", marvin["location"]);
+            
             var marvinLinks = (JObject) marvin["_links"];
             Assert.Equal("/person/Marvin", marvinLinks["self"]["href"]);
+            
             var links = (JObject)actual["_links"];
             Assert.Equal("/people", links["self"]["href"]);
         }

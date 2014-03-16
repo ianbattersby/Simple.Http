@@ -46,22 +46,40 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationTests.cs" />
-    <Compile Include="ExpressionHelperTests.cs" />
-    <Compile Include="FormDeserializerTests.cs" />
-    <Compile Include="HandlerBuilderFactoryTests.cs" />
-    <Compile Include="GetHandlerTests.cs" />
-    <Compile Include="LinkHelperTests.cs" />
+    <Compile Include="CodeGeneration\Handlers\TestHandler.cs" />
+    <Compile Include="CodeGeneration\Handlers\TestRedirectHandler.cs" />
+    <Compile Include="CodeGeneration\Handlers\TestUploadHandler.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubMethodLookup.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubRedirect.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetCache.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetFiles.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetIfModifiedSince.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetInput.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetInputETag.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetLastModified.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubSetOutputETag.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubWriteOutput.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubWriteRawHtml.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubWriteStatusCode.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubWriteStreamResponse.cs" />
+    <Compile Include="CodeGeneration\Stubs\StubWriteView.cs" />
+    <Compile Include="Helpers\ExpressionHelperTests.cs" />
+    <Compile Include="MediaTypeHandling\ContentTypeHandlerTableTest.cs" />
+    <Compile Include="MediaTypeHandling\FormDeserializerTests.cs" />
+    <Compile Include="CodeGeneration\HandlerBuilderFactoryTests.cs" />
+    <Compile Include="Links\LinkHelperTests.cs" />
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="MediaTypeHandling\MediaTypeHandlerExTests.cs" />
+    <Compile Include="Routing\RoutingTableBuilderTests.cs" />
+    <Compile Include="Routing\RoutingTableTests.cs" />
     <Compile Include="UriTemplateAttributeTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Simple.Http.Mocks\Simple.Http.Mocks.csproj">
+    <ProjectReference Include="..\Simple.Http.TestMocks\Simple.Http.TestMocks.csproj">
       <Project>{D50161E6-44C7-4527-825F-9EC3755ED2BD}</Project>
-      <Name>Simple.Http.Mocks</Name>
+      <Name>Simple.Http.TestMocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\Simple.Http.TestHelpers\Simple.Http.TestHelpers.csproj">
       <Project>{2C65A993-1EB6-4971-A1EE-B0FCF31AF525}</Project>

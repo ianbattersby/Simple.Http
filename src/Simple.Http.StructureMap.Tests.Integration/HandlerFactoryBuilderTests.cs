@@ -16,10 +16,13 @@
         public void CreatesInstanceOfType()
         {
             var startup = new TestStartup();
+
             startup.Run(SimpleHttp.Configuration);
+
             var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
             var actual = (TestHandler)actualFunc(new Dictionary<string, string> { { "TestProperty", "Foo" } }).Handler;
+
             Assert.Equal(Status.OK, actual.Get());
             Assert.Equal("Foo", actual.TestProperty);
         }
@@ -28,16 +31,20 @@
         public void DisposesInstances()
         {
             var startup = new TestStartup();
+
             startup.Run(SimpleHttp.Configuration);
+
             var target = new HandlerBuilderFactory(SimpleHttp.Configuration);
             var actualFunc = target.BuildHandlerBuilder(typeof(TestHandler));
 
             TestHandler handler;
+
             using (var scopedHandler = actualFunc(new Dictionary<string, string>()))
             {
-                handler = (TestHandler) scopedHandler.Handler;
+                handler = (TestHandler)scopedHandler.Handler;
                 Assert.Equal(false, handler.IsDisposed);
             }
+
             Assert.Equal(true, handler.IsDisposed);
         }
     }
@@ -79,7 +86,7 @@
         }
 
         public string TestProperty { get; set; }
-        
+
         public void Dispose()
         {
             this.IsDisposed = true;
@@ -93,6 +100,6 @@
 
     public class OkResult : IResult
     {
-        public Status Result { get { return Status.OK; }}
+        public Status Result { get { return Status.OK; } }
     }
 }

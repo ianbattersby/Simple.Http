@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace Simple.Http.TestHelpers
+﻿namespace Simple.Http.TestHelpers
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Runtime.Remoting;
@@ -323,9 +322,9 @@ namespace Simple.Http.TestHelpers
             {
                 this.stream.Dispose();
             }
-// ReSharper disable EmptyGeneralCatchClause
+            // ReSharper disable EmptyGeneralCatchClause
             catch { }
-// ReSharper restore EmptyGeneralCatchClause
+            // ReSharper restore EmptyGeneralCatchClause
         }
     }
 }

@@ -13,7 +13,9 @@
         public void ReadsBasicObject()
         {
             const string Source = @"{""name"":""Arthur Dent"",""location"":""Guildford""}";
+
             Person actual;
+            
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Source)))
             {
                 stream.Position = 0;
@@ -30,7 +32,9 @@
         {
             const string Source =
                 @"{""_links"": {""self"":""/person/42""}, ""name"":""Arthur Dent"",""location"":""Guildford""}";
+            
             Person actual;
+            
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(Source)))
             {
                 stream.Position = 0;
