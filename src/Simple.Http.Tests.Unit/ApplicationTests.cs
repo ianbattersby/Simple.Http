@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Simple.Http.Tests.Unit
+﻿namespace Simple.Http.Tests.Unit
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Simple.Http.Behaviors;
     using Simple.Http.Protocol;
+    using Simple.Http.TestHelpers;
 
     using Xunit;
 
@@ -18,7 +18,9 @@ namespace Simple.Http.Tests.Unit
 
         public ApplicationTests()
         {
-            var stream = new MemoryStream();
+            var streamRequest = new NonClosingMemoryStream(new MemoryStream());
+            var streamResponse = new NonClosingMemoryStream(new MemoryStream());
+
             this.context = new Dictionary<string, object>
                                                     {
                                                         { "host.AppName", "TestApp" },
@@ -26,9 +28,11 @@ namespace Simple.Http.Tests.Unit
                                                         { "owin.CallCancelled", new CancellationToken() },
                                                         { "owin.RequestProtocol", "HTTP" },
                                                         { "owin.RequestMethod", "GET" },
-                                                        { "owin.RequestBody", (Stream)stream },
+                                                        { "owin.RequestBody", (Stream)streamRequest },
                                                         { "owin.RequestPath", "" },
                                                         { "owin.RequestQueryString", string.Empty },
+                                                        { "owin.ResponseHeaders", new Dictionary<string, string[]>() },
+                                                        { "owin.ResponseBody", (Stream)streamResponse },
                                                         { "owin.RequestHeaders", new Dictionary<string, string[]>
                                                                                      {
                                                                                          { "X-Something", new [] { "somevalue" } }
@@ -40,9 +44,8 @@ namespace Simple.Http.Tests.Unit
         {
             this.context["owin.RequestPath"] = "/some/exception";
 
-            var task = Application.Run(context);
-
-            task.ContinueWith(
+            var task = Application.Run(this.context)
+                .ContinueWith(
                 t =>
                 {
                     Assert.IsAssignableFrom<Task>(t);
@@ -52,6 +55,8 @@ namespace Simple.Http.Tests.Unit
                     Assert.Equal(ExceptionEndpoint.ExceptionMessage, t.Exception.Message);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.Wait();
         }
 
         [Fact]
@@ -59,9 +64,8 @@ namespace Simple.Http.Tests.Unit
         {
             this.context["owin.RequestPath"] = "/some/behavior/exception";
 
-            var task = Application.Run(context);
-
-            task.ContinueWith(
+            var task = Application.Run(this.context)
+                .ContinueWith(
                 t =>
                 {
                     Assert.IsAssignableFrom<Task>(t);
@@ -71,6 +75,8 @@ namespace Simple.Http.Tests.Unit
                     Assert.Equal(BehaviorExceptionEndpoint.ExceptionMessage, t.Exception.Message);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.Wait();
         }
 
         [Fact]
@@ -78,18 +84,19 @@ namespace Simple.Http.Tests.Unit
         {
             this.context["owin.RequestPath"] = "/some/behavior/404";
 
-            var task = Application.Run(context);
-
-            task.ContinueWith(
+            var task = Application.Run(this.context)
+                .ContinueWith(
                 t =>
                 {
                     Assert.IsAssignableFrom<Task>(t);
                     Assert.False(t.IsFaulted);
                     Assert.False(t.IsCanceled);
                     Assert.Null(t.Exception);
-                    Assert.Equal(404, context["owin.ResponseStatusCode"]);
+                    Assert.Equal(404, this.context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.Wait();
         }
 
         [Fact]
@@ -97,18 +104,54 @@ namespace Simple.Http.Tests.Unit
         {
             this.context["owin.RequestPath"] = "/some/long/running";
 
-            var task = Application.Run(context);
-
-            task.ContinueWith(
+            var task = Application.Run(this.context)
+                .ContinueWith(
                 t =>
                 {
                     Assert.IsAssignableFrom<Task>(t);
                     Assert.False(t.IsFaulted);
                     Assert.False(t.IsCanceled);
                     Assert.Null(t.Exception);
-                    Assert.Equal(200, context["owin.ResponseStatusCode"]);
+                    Assert.Equal(200, this.context["owin.ResponseStatusCode"]);
                 },
                     TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            task.Wait();
+        }
+
+        [Fact]
+        public void SomeOutputIsReturned()
+        {
+            string result = null;
+
+            using (var stream = new NonClosingMemoryStream(new MemoryStream()))
+            {
+                this.context["owin.ResponseBody"] = stream;
+                this.context["owin.RequestPath"] = "/some/output/returned";
+
+                var task = Application.Run(this.context)
+                    .ContinueWith(t =>
+                    {
+                        Assert.IsAssignableFrom<Task>(t);
+                        Assert.False(t.IsFaulted);
+                        Assert.False(t.IsCanceled);
+                        Assert.Null(t.Exception);
+                        Assert.Equal(200, this.context["owin.ResponseStatusCode"]);
+
+                        stream.Position = 0;
+
+                        using (var reader = new StreamReader(stream))
+                        {
+                            result = reader.ReadToEnd();
+                        }
+
+                        stream.ForceDispose();
+
+                        Assert.Equal("Testing 1 2 3", result);
+                    }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                task.Wait();
+            }
         }
     }
 
@@ -164,5 +207,17 @@ namespace Simple.Http.Tests.Unit
             Thread.Sleep(3000);
             return Status.OK;
         }
+    }
+
+    [UriTemplate("/some/output/returned")]
+    public class SomeOutputReturned : IGet, IOutput<RawHtml>
+    {
+        public Status Get()
+        {
+            this.Output = "Testing 1 2 3";
+            return 200;
+        }
+
+        public RawHtml Output { get; private set; }
     }
 }

@@ -1,8 +1,9 @@
-﻿namespace Simple.Http.Tests
+﻿namespace Simple.Http.Tests.Unit
 {
     using System.Linq;
 
-    using Links;
+    using Simple.Http.Links;
+
     using Xunit;
 
     public class LinkHelperTests

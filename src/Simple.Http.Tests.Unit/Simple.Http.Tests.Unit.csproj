@@ -63,6 +63,10 @@
       <Project>{D50161E6-44C7-4527-825F-9EC3755ED2BD}</Project>
       <Name>Simple.Http.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Simple.Http.TestHelpers\Simple.Http.TestHelpers.csproj">
+      <Project>{2C65A993-1EB6-4971-A1EE-B0FCF31AF525}</Project>
+      <Name>Simple.Http.TestHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simple.Http\Simple.Http.csproj">
       <Project>{903C289D-4CAE-4259-80DA-79D74CE06DCE}</Project>
       <Name>Simple.Http</Name>
