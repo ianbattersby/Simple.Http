@@ -18,6 +18,11 @@ namespace Simple.Http
     public interface IConfiguration
     {
         /// <summary>
+        /// Gets or sets the HostedPath which the host is bound to and UriTemplate suffix.
+        /// </summary>
+        string HostedPath { get; set; }
+
+        /// <summary>
         /// Gets or sets the IoC container.
         /// </summary>
         /// <value>

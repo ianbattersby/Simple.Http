@@ -94,7 +94,7 @@ namespace Simple.Http
                 .Where(i => HttpMethodAttribute.Matches(i, httpMethod))
                 .ToArray();
 
-            return new RoutingTableBuilder(handlerTypes).BuildRoutingTable();
+            return new RoutingTableBuilder(SimpleHttp.Configuration.HostedPath, handlerTypes).BuildRoutingTable();
         }
 
         private static bool IsHttpMethodHandler(Type type)

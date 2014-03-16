@@ -22,14 +22,18 @@ namespace Simple.Http.Routing
     /// </summary>
     internal sealed class RoutingTableBuilder
     {
+        private readonly string hostedPath;
+
         private readonly IList<Type> handlerBaseTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoutingTableBuilder"/> class.
         /// </summary>
+        /// <param name="hostedPath">HostedPath which the host is bound to and UriTemplate suffix.</param>
         /// <param name="handlerBaseTypes">The handler base types.</param>
-        public RoutingTableBuilder(params Type[] handlerBaseTypes)
+        public RoutingTableBuilder(string hostedPath, params Type[] handlerBaseTypes)
         {
+            this.hostedPath = (hostedPath ?? string.Empty).Trim('/');
             this.handlerBaseTypes = handlerBaseTypes;
         }
 
@@ -48,14 +52,14 @@ namespace Simple.Http.Routing
 
         private void PopulateRoutingTableWithHandlers(RoutingTable routingTable)
         {
-            PopulateRoutingTableWithHandlers(routingTable, ExportedTypeHelper.FromCurrentAppDomain(this.TypeIsHandler));
+            PopulateRoutingTableWithHandlers(routingTable, ExportedTypeHelper.FromCurrentAppDomain(this.TypeIsHandler), this.hostedPath);
         }
 
-        private static void PopulateRoutingTableWithHandlers(RoutingTable routingTable, IEnumerable<Type> handlerTypes)
+        private static void PopulateRoutingTableWithHandlers(RoutingTable routingTable, IEnumerable<Type> handlerTypes, string hostedPath)
         {
             foreach (var exportedType in handlerTypes)
             {
-                foreach (var uriTemplate in UriTemplateAttribute.GetAllTemplates(exportedType))
+                foreach (var uriTemplate in UriTemplateAttribute.GetAllTemplates(exportedType).Where(u => !string.IsNullOrWhiteSpace(u)).Select(u => string.Format("/{0}/{1}", hostedPath, u.TrimStart('/'))))
                 {
                     if (exportedType.IsGenericTypeDefinition)
                     {
@@ -177,7 +181,7 @@ namespace Simple.Http.Routing
         {
             var routingTable = new RoutingTable();
 
-            PopulateRoutingTableWithHandlers(routingTable, handlerTypes);
+            PopulateRoutingTableWithHandlers(routingTable, handlerTypes, this.hostedPath);
 
             return routingTable;
         }

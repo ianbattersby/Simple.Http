@@ -14,7 +14,7 @@
         [Fact]
         public void FindsIGetType()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
 
             Assert.Contains(typeof(GetFoo), table.GetAllTypes());
@@ -23,7 +23,7 @@
         [Fact]
         public void FindsIGetTypeWhereIGetIsOnBaseClass()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
 
             Assert.Contains(typeof(Bar), table.GetAllTypes());
@@ -32,7 +32,7 @@
         [Fact]
         public void FindsGenericHandlerUsingRegexResolver()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
             var actualTypes = table.GetAllTypes().ToArray();
 
@@ -43,7 +43,7 @@
         [Fact]
         public void FindsGenericHandlerUsingExplicitResolver()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
 
             Assert.Contains(typeof(GetThingExplicit<Entity>), table.GetAllTypes());
@@ -53,7 +53,7 @@
         [Fact]
         public void FindsGenericHandlerUsingConstraints()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
             var allTypes = table.GetAllTypes();
 
@@ -64,7 +64,7 @@
         [Fact]
         public void FiltersHandlerByNoContentType()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
 
             IDictionary<string, string> variables;
@@ -78,7 +78,7 @@
         {
             Assert.Throws<Exception>(() =>
                 {
-                    var builder = new RoutingTableBuilder(typeof(IGet));
+                    var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
                     var table = builder.BuildRoutingTable();
 
                     IDictionary<string, string> variables;
@@ -89,7 +89,7 @@
         [Fact]
         public void FindsGetWithUltimateBaseClassNoInterface()
         {
-            var builder = new RoutingTableBuilder(typeof(IGet));
+            var builder = new RoutingTableBuilder(string.Empty, typeof(IGet));
             var table = builder.BuildRoutingTable();
 
             IDictionary<string, string> variables;
@@ -112,6 +112,18 @@
             var actualPatch = patchTable.GetHandlerTypeForUrl("/dualmethod", out variables);
 
             Assert.Equal(typeof(DualMethod), actualPatch);
+        }
+
+        [Fact]
+        public void PrefixesHostPathAsInTable()
+        {
+            var builder = new RoutingTableBuilder("something/else", typeof(IGet));
+            var table = builder.BuildRoutingTable();
+            
+            IDictionary<string, string> variables;
+            var actual = table.GetHandlerTypeForUrl("/something/else/spaceship", out variables);
+            
+            Assert.Equal(typeof(GetSpaceship), actual);
         }
     }
 

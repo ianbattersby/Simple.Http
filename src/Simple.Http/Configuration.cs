@@ -19,12 +19,21 @@ namespace Simple.Http
     {
         private ISimpleContainer container = new DefaultSimpleContainer();
 
-        /// <summary>
-        ///     Gets or sets the IoC container.
-        /// </summary>
-        /// <value>
-        ///     The container.
-        /// </value>
+        private string hostedPath;
+
+        public string HostedPath
+        {
+            get
+            {
+                return this.hostedPath ?? string.Empty;
+            }
+
+            set
+            {
+                this.hostedPath = value;
+            }
+        }
+
         public ISimpleContainer Container
         {
             get { return this.container; }
