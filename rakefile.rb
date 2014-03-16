@@ -108,7 +108,7 @@ task :build => [:init, :assemblyinfo, :packagerestore] do
 end
 
 task :packagerestore do
-    sh "#{NUGET_COMMAND} restore #{SOLUTION_FILE}"
+    sh "#{(MONO ? 'mono ' : '')}#{NUGET_COMMAND} restore #{SOLUTION_FILE}"
 end
 
 desc "Build + Tests (default)"
