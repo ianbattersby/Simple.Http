@@ -164,9 +164,6 @@ namespace Simple.Http.CodeGeneration
 
         private Expression BuildCallExpression(IEnumerable<object> blocks)
         {
-            HandlerBlock handlerBlock;
-            PipelineBlock pipelineBlock;
-
             Expression call = Expression.Call(AsyncPipeline.DefaultStartMethod);
 
             foreach (var block in blocks)
@@ -180,23 +177,28 @@ namespace Simple.Http.CodeGeneration
                 {
                     call = this.BuildCallHandlerExpression(block, call);
                 }
-                else if ((pipelineBlock = block as PipelineBlock) != null)
-                {
-                    call = Expression.Call(
-                        AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
-                        call,
-                        Expression.Constant(pipelineBlock.Generate(this.handlerType).Compile()),
-                        this.paramContext,
-                        this.paramHandler);
-                }
                 else
                 {
-                    call = Expression.Call(
-                        AsyncPipeline.ContinueWithActionMethod(this.handlerType),
-                        call,
-                        Expression.Constant(block),
-                        this.paramContext,
-                        this.paramHandler);
+                    PipelineBlock pipelineBlock;
+
+                    if ((pipelineBlock = block as PipelineBlock) != null)
+                    {
+                        call = Expression.Call(
+                            AsyncPipeline.ContinueWithAsyncBlockMethod(this.handlerType),
+                            call,
+                            Expression.Constant(pipelineBlock.Generate(this.handlerType).Compile()),
+                            this.paramContext,
+                            this.paramHandler);
+                    }
+                    else
+                    {
+                        call = Expression.Call(
+                            AsyncPipeline.ContinueWithActionMethod(this.handlerType),
+                            call,
+                            Expression.Constant(block),
+                            this.paramContext,
+                            this.paramHandler);
+                    }
                 }
             }
 

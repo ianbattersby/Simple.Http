@@ -14,7 +14,7 @@ namespace Simple.Http.Routing
     internal class StaticMatcher : MatcherBase
     {
         public StaticMatcher(string pattern)
-            : base(pattern)
+            : base(pattern, 0)
         {
         }
 

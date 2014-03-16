@@ -25,6 +25,6 @@ namespace Simple.Http.Routing
 
         bool Match(string part, string template, int index, MatchData matchData);
 
-        IMatcher Add(string[] parts, int index);
+        IMatcher Add(string[] parts, int index, int priority);
     }
 }

@@ -67,6 +67,18 @@
         }
 
         [Fact]
+        public void ThrowsExceptionForAmbiguousMatches()
+        {
+            Assert.Throws<Exception>(() =>
+                {
+                    var builder = new RoutingTableBuilder(typeof(IGet));
+                    var table = builder.BuildRoutingTable();
+                    IDictionary<string, string> variables;
+                    var actual = table.GetHandlerTypeForUrl("/twins", out variables);
+                });
+        }
+
+        [Fact]
         public void FindsGetWithUltimateBaseClassNoInterface()
         {
             var builder = new RoutingTableBuilder(typeof(IGet));
@@ -190,8 +202,17 @@
         }
     }
 
-    [UriTemplate("/spaceship")]
-    public class GetSpaceshipImage : IGet
+    [UriTemplate("/twins")]
+    public class TwinOne : IGet
+    {
+        public Status Get()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    [UriTemplate("/twins")]
+    public class TwinTwo : IGet
     {
         public Status Get()
         {

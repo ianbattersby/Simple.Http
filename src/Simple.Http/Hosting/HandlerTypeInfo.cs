@@ -20,12 +20,25 @@ namespace Simple.Http.Hosting
             this.type = type;
         }
 
+        public HandlerTypeInfo(Type type, int priority)
+        {
+            this.type = type;
+            this.Priority = priority;
+        }
+
+        public int Priority { get; private set; }
+
         public Type HandlerType
         {
             get
             {
                 return this.type;
             }
+        }
+
+        public HandlerTypeInfo SetPriority(int priority)
+        {
+            return new HandlerTypeInfo(this.type, priority);
         }
     }
 }

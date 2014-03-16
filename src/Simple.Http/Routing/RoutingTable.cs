@@ -69,7 +69,7 @@ namespace Simple.Http.Routing
                 return;
             }
 
-            matcher.Add(parts, 1).AddTypeInfo(type);
+            matcher.Add(parts, 1, 0).AddTypeInfo(type);
         }
 
         /// <summary>
@@ -111,6 +111,18 @@ namespace Simple.Http.Routing
             if (matchData.Single != null)
             {
                 return matchData.Single.HandlerType;
+            }
+            
+            if (matchData.List.Any())
+            {
+                var prioritisedList = matchData.List.GroupBy(hti => hti.Priority).OrderBy(g => g.Key).First();
+
+                if (prioritisedList.Count() > 1)
+                {
+                    throw new Exception(string.Format("Ambiguous handler route match '{0}'", url));
+                }
+
+                return prioritisedList.ElementAt(0).HandlerType;
             }
 
             return null;

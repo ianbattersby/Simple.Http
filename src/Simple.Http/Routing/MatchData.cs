@@ -18,7 +18,7 @@ namespace Simple.Http.Routing
     internal class MatchData
     {
         private bool set;
-
+        
         public IDictionary<string, string> Variables { get; private set; }
 
         public List<HandlerTypeInfo> List { get; private set; }
